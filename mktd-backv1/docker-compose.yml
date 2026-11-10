@@ -1,0 +1,93 @@
+# =====================================================================
+#  MarketData Perú - back (marketdata-api) + MySQL 8 en Docker
+#
+#  1) cp env.docker.example .env.docker     y completa las claves
+#  2) docker compose up -d --build
+#  3) http://localhost:8081/marketdata-api/actuator/health   ->  {"status":"UP"}
+#
+#  Front opcional (nginx con la carpeta ../gwu-front):
+#     docker compose --profile front up -d      ->  http://localhost:8080/gwu-front/
+#
+#  La base se crea sola la PRIMERA vez con db/docker/01_marketdata_db.sql
+#  y el usuario del back con db/docker/02_usuario.sh.
+#  Para empezar de cero (borra los datos):  docker compose down -v
+# =====================================================================
+name: marketdata
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    # MYSQL_ROOT_PASSWORD y DB_NAME / DB_USERNAME / DB_PASSWORD salen del mismo .env.docker del back
+    # (db/docker/02_usuario.sh crea ese usuario con permisos solo sobre la base)
+    env_file: .env.docker
+    environment:
+      TZ: America/Lima
+    # configuración para poca memoria (VPS pequeño): ~250 MB en vez de ~450 MB
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_spanish_ci
+      - --default-time-zone=-05:00
+      - --performance-schema=OFF
+      - --innodb-buffer-pool-size=${MYSQL_BUFFER_POOL:-128M}
+      - --innodb-log-buffer-size=8M
+      - --max-connections=${MYSQL_MAX_CONNECTIONS:-40}
+      - --table-open-cache=400
+      - --skip-name-resolve
+      - --log-bin-trust-function-creators=1
+      - --binlog-expire-logs-seconds=259200
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/docker:/docker-entrypoint-initdb.d:ro
+    ports:
+      # solo desde el mismo equipo (3307 para no chocar con un MySQL local en 3306)
+      - "127.0.0.1:${DB_PUERTO_LOCAL:-3307}:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  back:
+    build: .
+    image: marketdata-api:latest
+    restart: unless-stopped
+    env_file: .env.docker
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      LOG_DIR: /app/logs
+      UPLOAD_DIR: /app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${BACK_PUERTO:-8081}:8081"
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+    mem_limit: 384m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # front estático (opcional): docker compose --profile front up -d
+  front:
+    image: nginx:1.27-alpine
+    profiles: ["front"]
+    restart: unless-stopped
+    volumes:
+      - ${FRONT_DIR:-../gwu-front}:/usr/share/nginx/html/gwu-front:ro
+    ports:
+      - "${FRONT_PUERTO:-8080}:80"
+    depends_on:
+      - back
+
+volumes:
+  db_data:
+  uploads:
+  logs:
