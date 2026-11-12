@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Consulta RUC</title>
+  <link rel="icon" href="../../dist/img/marketdata-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010" id="gwu-theme">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-7"><h1 class="m-0">Consulta RUC</h1></div>
+            <div class="col-sm-5">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="../seguridad/principal.html">Inicio</a></li>
+                <li class="breadcrumb-item">Análisis de mercado</li><li class="breadcrumb-item active">Consulta RUC</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-building mr-1"></i> Servicio Empresarial (SUNAT)</h3></div>
+                <div class="card-body">
+                  <form id="formRuc" onsubmit="return false;">
+                    <div class="form-group">
+                      <label for="txtRuc">Número de RUC</label>
+                      <input type="text" class="form-control" id="txtRuc" maxlength="11" inputmode="numeric" placeholder="20XXXXXXXXX" autocomplete="off">
+                      <small class="md-ayuda" id="ayudaRuc">11 dígitos. Se valida el dígito verificador antes de consultar.</small>
+                    </div>
+                    <div class="custom-control custom-switch mb-3" id="grupoForzar" style="display: none;">
+                      <input type="checkbox" class="custom-control-input" id="chkForzar">
+                      <label class="custom-control-label" for="chkForzar">Consultar sin caché</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="btnConsultar"><i class="fas fa-search mr-1"></i> Consultar</button>
+                  </form>
+                  <hr>
+                  <div class="md-ayuda">La consulta va por <b>SOAP/XML</b> a la SUNAT; el adaptador la transforma a JSON. El resultado se guarda en MySQL y se reutiliza mientras esté vigente.</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div id="sinResultado" class="card"><div class="card-body md-vacio"><i class="fas fa-id-card"></i>Ingresa un RUC para ver su estado, condición y actividad económica.</div></div>
+              <div class="card card-primary card-outline" id="resultado" style="display: none;">
+                <div class="card-header">
+                  <h3 class="card-title" id="lblRazonSocial"></h3>
+                  <div class="card-tools" id="lblOrigen"></div>
+                </div>
+                <div class="card-body p-0"><table class="table table-sm md-tabla-dl mb-0" id="tablaRuc"><tbody></tbody></table></div>
+                <div class="card-footer md-ayuda" id="lblPie"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/comun-md.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/consulta-ruc.js?v=20261010"></script>
+</body>
+</html>

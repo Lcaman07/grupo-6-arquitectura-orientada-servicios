@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MarketData | Ingreso</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+   <style>
+    /* 1. CONFIGURACIÓN DEL FONDO COMPLETO RESPONSIVO */
+    html, body {
+      background-image: url('../../dist/img/fondo-marketdata.svg') !important;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0;
+      padding: 0;
+    }
+
+    body.login-page {
+      background: transparent !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start; /* Desplazado a la izquierda en monitores */
+      padding-left: 10%;
+    }
+
+    /* Adaptabilidad automática para teléfonos móviles */
+    @media (max-width: 991px) {
+      body.login-page {
+        align-items: center !important;
+        padding-left: 0 !important;
+      }
+      .login-box {
+        margin-top: 40px;
+      }
+    }
+
+    /* Ocultar el título de texto plano para priorizar la gráfica limpia */
+    .login-logo {
+      display: none !important;
+    }
+
+    /* 2. CUADRO ESTILO PREMIUM DARK GLASS */
+    .login-box .card {
+      background: rgba(18, 18, 18, 0.6) !important; /* Capa oscura translúcida */
+      backdrop-filter: blur(15px); /* Efecto cristal esmerilado */
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .login-card-body {
+      background: transparent !important;
+      padding: 35px 30px !important;
+    }
+
+    /* 3. TEXTO DE BIENVENIDA / INSTRUCCIÓN */
+    .login-box .login-box-msg {
+      color: rgba(255, 255, 255, 0.75) !important;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      padding: 0 0 25px 0 !important;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* Estilo sutil para el indicador de fuerza de contraseña */
+    #passstrength {
+      display: block;
+      font-size: 0.8rem;
+      margin-top: -10px;
+      margin-bottom: 12px;
+      padding-left: 5px;
+      font-weight: 600;
+    }
+
+    /* 4. INPUTS DE CONTRASEÑA ESTILIZADOS INTEGRADOS */
+    .login-box .form-control {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 8px 0 0 8px !important;
+      height: 45px;
+      transition: all 0.3s ease;
+    }
+
+    .login-box .form-control:focus {
+      border-color: #2f81f7 !important; /* Encendido rojo de marca al interactuar */
+      box-shadow: none !important;
+    }
+
+    .login-box .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .login-box .input-group-text {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: rgba(255, 255, 255, 0.5) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-left: none !important;
+      border-radius: 0 8px 8px 0 !important;
+      height: 45px;
+    }
+
+    /* Cambio dinámico del icono cuando el input recibe el foco */
+    .login-box .input-group:focus-within .input-group-text {
+      border-color: #2f81f7 !important;
+      color: #2f81f7 !important;
+    }
+
+    /* 5. BOTÓN DE ACCIÓN ROJO DEPORTIVO MOTOR */
+    .btn-custom-red {
+      background: #2f81f7 !important;
+      border: none !important;
+      color: #ffffff !important;
+      height: 45px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-radius: 8px !important;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 12px rgba(47, 129, 247, 0.3) !important;
+    }
+    
+    .btn-custom-red:hover {
+      background: #1f6fe0 !important;
+      box-shadow: 0 6px 20px rgba(47, 129, 247, 0.5) !important;
+      transform: translateY(-1px);
+    }
+    
+    .btn-custom-red:active {
+      transform: translateY(1px);
+    }
+
+    /* Footer estático e integrado al entorno oscuro */
+    footer {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      padding: 0 20px;
+    }
+    
+    footer p {
+      color: rgba(255, 255, 255, 0.4) !important;
+      font-size: 0.8rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      margin: 0;
+    }
+
+    /* Preloader */
+    #preloader {
+      position:fixed;
+      top: 0;
+      left: 0;
+      background-color: #0f141d;
+      width: 100%;
+      height:100%;
+      opacity: 0.7;
+      z-index: 999999;
+    }     
+   </style> 
+
+</head>
+<body class="hold-transition login-page">
+  
+<div id="preloader" class="preloader" style="display: none;"></div>  
+
+<div class="login-box">
+
+  <div class="card">
+    <div class="card-body login-card-body">
+
+      <p class="login-box-msg">Restablecer su Contraseña</p>
+
+      <form class="form-signin" id="login-formulario" onkeypress="if(event.keyCode == 13) { return false; }" onsubmit="return false;">
+       
+        <!-- Input Clave Nueva -->
+        <div class="input-group mb-3">          
+          <input type="password" class="form-control" placeholder="Nueva Clave" id="clave" name="clave">          
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <!-- Se corrigió fas fa-envelope por fas fa-key para coherencia UX -->
+              <span class="fas fa-key"></span>
+            </div>
+          </div>
+        </div>
+        
+        <span id="passstrength"></span>
+        
+        <!-- Input Confirmar Clave -->
+        <div class="input-group mb-4">
+          <input type="password" class="form-control" placeholder="Confirmar Nueva Clave" id="ConfirmarClave" name="ConfirmarClave">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>     
+
+        <div class="row">
+          <div class="col-12">
+            <!-- Botón unificado a la clase roja de marca -->
+            <button id="btnIngresar" type="submit" class="btn btn-block btn-custom-red">Actualizar Contraseña</button>            
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+
+</div>
+<!-- /.login-box -->
+
+<footer>
+  <p class="text-center">
+    Copyright © <label id="anio"></label> MarketData Perú S.A.C. Todos los derechos reservados
+  </p>
+  <script>
+    document.getElementById("anio").innerHTML = new Date().getFullYear();
+  </script>
+</footer>
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- jquery-validation -->
+<script src="../../plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="../../plugins/jquery-validation/additional-methods.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+
+<script src="../../dist/js/pages/common/common.js"></script>
+<script src="../../dist/js/pages/recuperar/restablecer-contrasena.js"></script>
+
+</body> 
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MarketData | Ingreso</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+   <style>
+    /* 1. CONFIGURACIÓN DEL FONDO COMPLETO RESPONSIVO */
+    html, body {
+      background-image: url('../../dist/img/fondo-marketdata.svg') !important;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0;
+      padding: 0;
+    }
+
+    body.login-page {
+      background: transparent !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start; /* Alinea a la izquierda en pantallas grandes */
+      padding-left: 10%; /* Deja libre el centro para el logo corporativo */
+    }
+
+    /* Adaptabilidad para dispositivos móviles (se vuelve a centrar) */
+    @media (max-width: 991px) {
+      body.login-page {
+        align-items: center !important;
+        padding-left: 0 !important;
+      }
+      .login-box {
+        margin-top: 40px;
+      }
+    }
+
+    /* Ocultar el título de texto plano para no ensuciar la pantalla con letras sobreescribiendo el fondo */
+    .login-logo {
+      display: none !important;
+    }
+
+    /* 2. CUADRO DE RECOVERY ESTILO PREMIUM DARK GLASS */
+    .login-box .card {
+      background: rgba(18, 18, 18, 0.6) !important; /* Capa oscura translúcida */
+      backdrop-filter: blur(15px); /* Efecto esmerilado de alta gama */
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.12) !important; /* Borde sutil brillante */
+      border-radius: 16px; /* Esquinas curvas modernas */
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important; /* Sombra con profundidad */
+    }
+
+    .login-card-body {
+      background: transparent !important;
+      padding: 35px 30px !important;
+    }
+
+    /* 3. TEXTO DE MENSAJE Y BIENVENIDA */
+    .login-box .login-box-msg {
+      color: rgba(255, 255, 255, 0.75) !important;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      line-height: 1.4;
+      padding: 0 0 25px 0 !important;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* 4. FORMULARIO INTERNO: INPUT DE EMAIL */
+    .login-box .form-control {
+      background: rgba(255, 255, 255, 0.08) !important; /* Cuadro oscuro integrado */
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 8px !important;
+      height: 45px;
+      transition: all 0.3s ease;
+      font-weight: 400;
+    }
+
+    .login-box .form-control:focus {
+      border-color: #2f81f7 !important; /* Iluminación roja de la marca al hacer foco */
+      box-shadow: 0 0 8px rgba(47, 129, 247, 0.2) !important;
+    }
+
+    .login-box .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    /* 5. BOTÓN DE ACCIÓN ROJO DEPORTIVO JORCAR */
+    .btn-custom-red {
+      background: #2f81f7 !important;
+      border: none !important;
+      color: #ffffff !important;
+      height: 45px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-radius: 8px !important;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 12px rgba(47, 129, 247, 0.3) !important;
+    }
+    
+    .btn-custom-red:hover {
+      background: #1f6fe0 !important; /* Rojo más oscuro al presionar */
+      box-shadow: 0 6px 20px rgba(47, 129, 247, 0.5) !important;
+      transform: translateY(-1px);
+    }
+    
+    .btn-custom-red:active {
+      transform: translateY(1px);
+    }
+
+    /* Footer estático e integrado */
+    footer {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      padding: 0 20px;
+    }
+    
+    footer p {
+      color: rgba(255, 255, 255, 0.4) !important;
+      font-size: 0.8rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      margin: 0;
+    }
+
+    /* Preloader */
+    #preloader {
+      position:fixed;
+      top: 0;
+      left: 0;
+      background-color: #0f141d;
+      width: 100%;
+      height:100%;
+      opacity: 0.7;
+      z-index: 999999;
+    }     
+   </style> 
+
+</head>
+<body class="hold-transition login-page">
+  
+<div id="preloader" class="preloader" style="display: none;"></div>  
+
+<div class="login-box">
+
+  <div class="card">
+    <div class="card-body login-card-body">
+
+      <p class="login-box-msg">Ingresar Gmail para restablecer su contraseña</p>
+
+      <div class="example-container" *ngIf="route.children.length === 0">
+        
+        <!-- Input con estilos unificados e integrados -->
+        <input type="email" id="email" class="form-control" placeholder="Tu email" autocomplete="off">
+              
+        <br />
+      
+        <!-- Botón actualizado a la clase estilizada de la marca -->
+        <button id="btnRestablecer" onclick="fnRecuperar.fnRestableserContrasena()" type="submit" class="btn btn-block btn-custom-red">Enviar correo</button>      
+        
+      </div>
+      
+      <div>
+        <router-outlet *ngIf="route.children.length !== 0"></router-outlet>
+      </div>
+
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+
+</div>
+<!-- /.login-box -->
+
+<footer>
+  <p class="text-center">
+    Copyright © <label id="anio"></label> MarketData Perú S.A.C. Todos los derechos reservados
+  </p>
+  <script>
+    document.getElementById("anio").innerHTML = new Date().getFullYear();
+  </script>
+</footer>
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- jquery-validation -->
+<script src="../../plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="../../plugins/jquery-validation/additional-methods.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+
+<script src="../../dist/js/pages/common/common.js"></script>
+<script src="../../dist/js/pages/recuperar/recuperar-contrasena.js"></script>
+
+</body>
+</html>

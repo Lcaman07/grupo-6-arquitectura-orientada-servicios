@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MarketData | Ingreso</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://ionicframework.com">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://googleapis.com" rel="stylesheet">
+
+   <style>
+    /* 1. CONFIGURACIÓN DEL FONDO COMPLETO */
+    html, body {
+      /* imagen y color: Seguridad > Apariencia (common.js pone las variables) */
+      background-color: var(--gwu-login-fondo, #0f141d) !important;
+      background-image: var(--gwu-login-imagen, url('../../dist/img/fondo-marketdata.svg')) !important;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0;
+      padding: 0;
+    }
+
+    body.login-page {
+      background: transparent !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start; /* Alinea a la izquierda en pantallas grandes */
+      padding-left: 10%; /* Empuja el login al espacio vacío izquierdo */
+    }
+
+    /* Ajuste responsivo para celulares: el login vuelve al centro */
+    @media (max-width: 991px) {
+      body.login-page {
+        align-items: center !important;
+        padding-left: 0 !important;
+      }
+      .login-box {
+        margin-top: 40px;
+      }
+    }
+
+    /* El nombre y el logo ya están en la imagen de fondo */
+    .login-logo {
+      display: none !important;
+    }
+
+    /* 2. CUADRO DE LOGIN ESTILO PREMIUM DARK GLASS */
+    .login-box .card {
+      background: var(--gwu-login-tarjeta, rgba(18, 18, 18, 0.6)) !important; /* Base oscura translúcida */
+      backdrop-filter: blur(15px); /* Efecto cristal esmerilado de alta gama */
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.12) !important; /* Borde sutil brillante */
+      border-radius: 16px; /* Bordes más curvos y modernos */
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important; /* Sombra profunda */
+    }
+
+    .login-card-body {
+      background: transparent !important;
+      padding: 35px 30px !important;
+    }
+
+    /* 3. TEXTOS INTERNOS */
+    .login-box .login-box-msg {
+      color: #ffffff !important;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      padding: 0 0 25px 0 !important;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7) !important;
+      text-align: center;
+    }
+
+    /* 4. INPUTS ESTILIZADOS INTEGRADOS */
+    .login-box .form-control {
+      background: rgba(255, 255, 255, 0.08) !important; /* Inputs oscuros semi-transparentes */
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 8px 0 0 8px !important;
+      height: 45px;
+      transition: all 0.3s ease;
+    }
+
+    .login-box .form-control:focus {
+      border-color: var(--gwu-rojo, #2f81f7) !important; /* Brilla en rojo al hacer foco */
+      box-shadow: none !important;
+    }
+
+    .login-box .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .login-box .input-group-text {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: rgba(255, 255, 255, 0.5) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-left: none !important;
+      border-radius: 0 8px 8px 0 !important;
+      height: 45px;
+    }
+
+    /* Cambio de icono activo cuando el input tiene foco */
+    .login-box .input-group:focus-within .input-group-text {
+      border-color: var(--gwu-rojo, #2f81f7) !important;
+      color: var(--gwu-rojo, #2f81f7) !important;
+    }
+
+    /* Enlace de recuperación elegante */
+    .login-box a {
+      color: rgba(255, 255, 255, 0.6) !important;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
+    }
+    .login-box a:hover {
+      color: var(--gwu-rojo, #2f81f7) !important; /* Se vuelve rojo deportivo al pasar el mouse */
+      text-decoration: none;
+    }
+
+    /* 5. BOTÓN DE ACCIÓN ROJO DEPORTIVO MOTOR */
+    .btn-custom-red {
+      background: var(--gwu-rojo, #2f81f7) !important;
+      border: none !important;
+      color: #ffffff !important;
+      height: 45px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-radius: 8px !important;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 12px rgba(47, 129, 247, 0.3) !important;
+    }
+    .btn-custom-red:hover {
+      background: #1f6fe0 !important;
+      box-shadow: 0 6px 20px rgba(47, 129, 247, 0.5) !important;
+      transform: translateY(-1px);
+    }
+    .btn-custom-red:active {
+      transform: translateY(1px);
+    }
+
+    /* Footer firma digital */
+    footer {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      padding: 0 20px;
+    }
+    footer p {
+      color: rgba(255, 255, 255, 0.4) !important;
+      font-size: 0.8rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      margin: 0;
+    }
+
+    /* Preloader */
+    #preloader {
+      position:fixed;
+      top: 0;
+      left: 0;
+      background-color: #0f141d;
+      width: 100%;
+      height:100%;
+      opacity: 0.7;
+      z-index: 999999;
+    }     
+   </style> 
+
+</head>
+<body class="hold-transition login-page">
+  
+<div id="preloader" class="preloader" style="display: none;"></div>  
+
+<div class="login-box">
+  <div class="card">
+    <div class="card-body login-card-body">
+
+      <p class="login-box-msg">Control de Acceso</p>
+
+      <form class="form-signin" id="login-formulario" onkeypress="if(event.keyCode == 13) { return false; }" onsubmit="return false;">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Usuario" id="usuario" name="usuario" autocomplete="off">
+          <div class="input-group-append">
+            <div class="input-group-text"> 
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Contraseña" id="clave" name="clave">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4" style="text-align: right;">
+          <a href="../recuperar/recuperar-contrasena.html">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <button id="btnIngresar" type="submit" class="btn btn-block btn-custom-red">Ingresar al sistema</button>            
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p class="text-center">
+    Copyright © <label id="anio"></label> MarketData Perú S.A.C. Todos los derechos reservados.
+  </p>
+  <script>
+    document.getElementById("anio").innerHTML = new Date().getFullYear();
+  </script>
+</footer>
+
+<!-- Archivos JS -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../../plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="../../plugins/jquery-validation/additional-methods.min.js"></script>
+<script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+<script src="../../dist/js/adminlte.min.js"></script>
+<script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+<script src="../../dist/js/pages/seguridad/login.js?v=20261010"></script>
+
+</body>
+</html>

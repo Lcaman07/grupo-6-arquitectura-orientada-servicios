@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>MarketData | Inicio</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" type="text/javascript" defer></script>
+  <!-- Treeview -->
+  <link href="../../plugins/hummingbird-treeview-master/hummingbird-treeview.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <style>
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #161d29;
+      width: 100%;
+      height: 100%;
+      opacity: 0.5;
+      z-index: 999999;
+    }
+
+  </style>
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div id="preloader" class="preloader" style="display: none;"></div>
+
+  <div class="wrapper">
+
+    <!-- Navbar -->
+    <div id="navBar"></div>
+    <!-- /.navbar -->
+
+
+    <!-- Main Sidebar Container -->
+    <!-- ------------------------------------------------------------------------------ -->
+    <!-- <div id="asideBar"></div> -->
+    <aside-component></aside-component>
+
+    <!-- Content Wrapper. Contains page content -->
+    <!-- ------------------------------------------------------------------------------ -->
+    <div class="content-wrapper">
+
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+
+            <div class="col-sm-6">
+              <h1 class="m-0 text-dark">Nuevo Acceso</h1>
+            </div><!-- /.col --> 
+
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Acceso</a></li>
+                <li class="breadcrumb-item active">Nuevo Acceso</li>
+              </ol>
+            </div><!-- /.col -->
+
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <div class="content">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-primary card-outline">
+
+                
+                  <div class="card-body">
+
+                    <div class="form-group row">
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <label for="nombre" class="col-sm-4 col-form-label">Nombre:</label>
+                        <div class="col-sm-8">
+                          <input class="form-control" type="text" id="nombre" name="nombre" value="">
+                        </div>
+                      </div>
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <label for="path" class="col-sm-4 col-form-label">Path:</label>
+                        <div class="col-sm-8">
+                          <input class="form-control" type="text" id="path" name="path" value="">
+                        </div>
+                      </div>
+                    </div>
+                     
+                    <div class="form-group row">
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <label for="orden" class="col-sm-4 col-form-label">orden:</label>
+                        <div class="col-sm-8">
+                          <input class="form-control" type="text" id="orden" name="orden" value="">
+                        </div>
+                      </div>
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <label for="Nombremenu" class="col-form-label"> Menu: </label>
+                        <select id="Nombremenu" class="form-control select2" style="width: 150px;">
+                        </select>
+                      </div>                     
+                    </div>
+                    <div class="form-group row">                      
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="custom-control custom-checkbox">
+                          <input class="custom-control-input" type="checkbox" id="customCheckbox1" value="option1" checked>
+                          <label for="customCheckbox1" class="custom-control-label">Activo</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <a href="javascript: fnCommon.opcionesEstaticas(14);" type="button" id="btnConfirmar" class="btn btn-primary">
+                          Regresar </a>
+                        <button onclick="fnNewAcceso.fnAccesos()" class="btn btn-primary"> Guardar </button>
+                      </div>
+                    </div>
+
+                  </div>
+               
+
+              </div><!-- /.card card-primary card-outline -->
+            </div>
+          </div> <!-- /.row -->
+
+
+
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content -->
+
+    </div>
+    <!-- /.content-wrapper -->
+
+
+    <!-- Main Footer -->
+    <!-- ------------------------------------------------------------------------------ -->
+    <div id="footerBar"></div>
+
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- REQUIRED SCRIPTS -->
+
+  <!-- jQuery -->
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+
+  <!-- alert Sweet -->
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <!--
+<script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/seguridad/nuevo-acceso.js?v=20261010"></script>
+
+</body>
+
+</html>

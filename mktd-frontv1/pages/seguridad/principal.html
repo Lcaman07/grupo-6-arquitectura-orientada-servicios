@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Inicio</title>
+  <link rel="icon" href="../../dist/img/marketdata-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010" id="gwu-theme">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-7"><h1 class="m-0">Panel de MarketData</h1></div>
+            <div class="col-sm-5">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="../seguridad/principal.html">Inicio</a></li>
+                <li class="breadcrumb-item active">Página principal</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+
+          <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+            <div class="md-ayuda">Resumen de los análisis de zona y de la integración con el INEI y la SUNAT.</div>
+            <a href="../marketdata/analisis-zona.html" class="btn btn-primary"><i class="fas fa-search-location mr-1"></i> Nuevo análisis de zona</a>
+          </div>
+          <div class="row">
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="../marketdata/historial.html">
+                <span class="gwu-kpi-icono"><i class="fas fa-chart-pie"></i></span>
+                <span class="gwu-kpi-texto">Análisis realizados</span>
+                <span class="gwu-kpi-valor" id="kpiAnalisis">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="../marketdata/historial.html">
+                <span class="gwu-kpi-icono"><i class="fas fa-map-marker-alt"></i></span>
+                <span class="gwu-kpi-texto">Zonas evaluadas</span>
+                <span class="gwu-kpi-valor" id="kpiZonas">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="../marketdata/historial.html">
+                <span class="gwu-kpi-icono"><i class="fas fa-star-half-alt"></i></span>
+                <span class="gwu-kpi-texto">Índice promedio</span>
+                <span class="gwu-kpi-valor" id="kpiIndice">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="../marketdata/historial.html">
+                <span class="gwu-kpi-icono"><i class="fas fa-check-circle"></i></span>
+                <span class="gwu-kpi-texto">Análisis completos</span>
+                <span class="gwu-kpi-valor" id="kpiCompletos">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="../marketdata/bitacora.html">
+                <span class="gwu-kpi-icono"><i class="fas fa-stopwatch"></i></span>
+                <span class="gwu-kpi-texto">Tiempo promedio</span>
+                <span class="gwu-kpi-valor" id="kpiTiempo">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="../marketdata/bitacora.html">
+                <span class="gwu-kpi-icono"><i class="fas fa-database"></i></span>
+                <span class="gwu-kpi-texto">Resueltos desde caché</span>
+                <span class="gwu-kpi-valor" id="kpiCache">-</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-7">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Zonas con mejor índice de atractivo</h3>
+                  <div class="card-tools"><a href="../marketdata/comparar-zonas.html" class="btn btn-tool">Comparar <i class="fas fa-angle-right"></i></a></div></div>
+                <div class="card-body"><div class="gwu-grafico"><canvas id="graficoRanking" role="img" aria-label="Zonas con mejor índice"></canvas></div></div>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Análisis por día (últimos 14 días)</h3></div>
+                <div class="card-body"><div class="gwu-grafico"><canvas id="graficoDias" role="img" aria-label="Análisis por día"></canvas></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-5">
+              <div class="card card-info card-outline">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-plug mr-1"></i> Integración (últimos 30 días)</h3>
+                  <div class="card-tools"><a href="../marketdata/bitacora.html" class="btn btn-tool">Bitácora <i class="fas fa-angle-right"></i></a></div></div>
+                <div class="card-body p-0 table-responsive">
+                  <table class="table table-sm mb-0" id="tablaIntegracion">
+                    <thead><tr><th>Servicio</th><th class="md-num">Llamadas</th><th class="md-num">% éxito</th><th class="md-num">Prom.</th></tr></thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Zonas por nivel de atractivo</h3></div>
+                <div class="card-body p-0"><table class="table table-sm mb-0" id="tablaNiveles"><tbody></tbody></table></div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Últimos análisis</h3>
+                  <div class="card-tools"><a href="../marketdata/historial.html" class="btn btn-tool">Ver todos <i class="fas fa-angle-right"></i></a></div></div>
+                <div class="card-body p-0 table-responsive">
+                  <table class="table table-sm mb-0" id="tablaUltimos">
+                    <thead><tr><th>N°</th><th>Fecha</th><th>Zona</th><th>Índice</th><th>Estado</th></tr></thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../plugins/chart.js/Chart.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/comun-md.js?v=20261010"></script>
+  <script src="../../dist/js/pages/seguridad/principal.js?v=20261010"></script>
+</body>
+</html>

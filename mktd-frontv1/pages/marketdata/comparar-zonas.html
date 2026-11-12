@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Comparar zonas</title>
+  <link rel="icon" href="../../dist/img/marketdata-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010" id="gwu-theme">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-7"><h1 class="m-0">Comparar zonas</h1></div>
+            <div class="col-sm-5">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="../seguridad/principal.html">Inicio</a></li>
+                <li class="breadcrumb-item">Análisis de mercado</li><li class="breadcrumb-item active">Comparar zonas</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+
+          <div class="card card-primary card-outline">
+            <div class="card-header"><h3 class="card-title"><i class="fas fa-balance-scale mr-1"></i> Zonas evaluadas</h3></div>
+            <div class="card-body">
+              <div class="form-row align-items-end">
+                <div class="form-group col-lg-9">
+                  <label for="cboAnalisis">Elige de 2 a 4 análisis ya realizados (no se vuelve a consultar al INEI ni a la SUNAT)</label>
+                  <select class="form-control" id="cboAnalisis" multiple="multiple" style="width: 100%;"></select>
+                </div>
+                <div class="form-group col-lg-3">
+                  <button type="button" class="btn btn-primary btn-block" id="btnComparar"><i class="fas fa-columns mr-1"></i> Comparar</button>
+                </div>
+              </div>
+              <div class="md-ayuda">¿Falta una zona? Analízala primero en <a href="analisis-zona.html">Análisis de zona</a>.</div>
+            </div>
+          </div>
+
+          <div id="sinResultado" class="card"><div class="card-body md-vacio"><i class="fas fa-balance-scale"></i>Selecciona las zonas que quieres comparar.</div></div>
+
+          <div id="resultado" style="display: none;">
+            <div class="alert alert-info" id="cajaRecomendacion" style="display: none;"></div>
+            <div class="card card-primary card-outline">
+              <div class="card-header"><h3 class="card-title">Comparación lado a lado</h3>
+                <div class="card-tools md-ayuda">resaltado = mejor valor de la fila</div></div>
+              <div class="card-body p-0 table-responsive">
+                <table class="table table-sm mb-0" id="tablaComparar"><thead></thead><tbody></tbody></table>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="card card-primary card-outline">
+                  <div class="card-header"><h3 class="card-title">Componentes del índice (0 a 100)</h3></div>
+                  <div class="card-body"><div class="gwu-grafico"><canvas id="graficoIndices" role="img" aria-label="Componentes del índice por zona"></canvas></div></div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-primary card-outline">
+                  <div class="card-header"><h3 class="card-title">Empresas por mil habitantes en los sectores principales</h3></div>
+                  <div class="card-body"><div class="gwu-grafico"><canvas id="graficoSectores" role="img" aria-label="Empresas por mil habitantes por sector y zona"></canvas></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../plugins/select2/js/select2.full.min.js"></script>
+  <script src="../../plugins/chart.js/Chart.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/comun-md.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/comparar-zonas.js?v=20261010"></script>
+</body>
+</html>

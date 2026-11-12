@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Mi perfil</title>
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" type="text/javascript" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6"><h1 class="m-0 text-dark">Mi perfil</h1></div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="../seguridad/principal.html">Inicio</a></li>
+                <li class="breadcrumb-item active">Mi perfil</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+
+            <!-- Tarjeta: foto y datos fijos -->
+            <div class="col-lg-4">
+              <div class="card card-primary card-outline">
+                <div class="card-body text-center">
+                  <div class="gwu-perfil-foto mx-auto mb-3" id="perfilFoto"><span id="perfilIniciales">?</span></div>
+                  <input type="file" id="perfilArchivo" accept="image/*" style="display: none;">
+                  <button type="button" class="btn btn-default btn-sm" id="btnCambiarFoto"><i class="fas fa-camera mr-1"></i> Cambiar foto</button>
+                  <p class="text-muted small mt-2 mb-3">Se achica sola antes de subirla (unos 20 KB).</p>
+                  <h3 class="h5 mb-0" id="perfilNombre"></h3>
+                  <span class="badge badge-secondary mt-1" id="perfilRol"></span>
+                  <ul class="list-group list-group-unbordered mt-3 text-left">
+                    <li class="list-group-item"><b>Usuario</b> <span class="float-right" id="perfilUsuario"></span></li>
+                    <li class="list-group-item"><b>Correo</b> <span class="float-right text-truncate" style="max-width: 65%;" id="perfilCorreo"></span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulario -->
+            <div class="col-lg-8">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Mis datos</h3></div>
+                <form id="formPerfil" autocomplete="off" onsubmit="return false;">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="nombres">Nombres:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" id="nombres" maxlength="100">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="apellidos">Apellidos:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" id="apellidos" maxlength="100">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="dni">Documento:<span class="text-danger">*</span></label>
+                        <div class="input-group">
+                          <select class="form-control" id="idTipoDocumento" style="max-width: 40%;"></select>
+                          <input class="form-control" type="text" id="dni" maxlength="12" style="text-transform: uppercase;">
+                        </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="telefono">Teléfono:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="tel" id="telefono" maxlength="9" inputmode="numeric">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="correo">Correo:</label>
+                        <input class="form-control" type="email" id="correo" disabled>
+                        <small class="text-muted">Es tu dato para recuperar la contraseña: solo lo cambia el administrador.</small>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="usuario">Usuario:</label>
+                        <input class="form-control" type="text" id="usuario" disabled>
+                      </div>
+                    </div>
+
+                    <hr>
+                    <div class="custom-control custom-switch mb-3">
+                      <input type="checkbox" class="custom-control-input" id="chkCambiarClave">
+                      <label class="custom-control-label" for="chkCambiarClave">Quiero cambiar mi contraseña</label>
+                    </div>
+                    <div class="row" id="grupoClave" style="display: none;">
+                      <div class="form-group col-md-4">
+                        <label for="claveActual">Contraseña actual:</label>
+                        <div class="input-group">
+                          <input class="form-control" type="password" id="claveActual" autocomplete="current-password">
+                          <div class="input-group-append"><button class="btn btn-default btn-ver-clave" type="button" tabindex="-1" title="Ver"><i class="fas fa-eye"></i></button></div>
+                        </div>
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="claveNueva">Nueva contraseña:</label>
+                        <div class="input-group">
+                          <input class="form-control" type="password" id="claveNueva" autocomplete="new-password">
+                          <div class="input-group-append"><button class="btn btn-default btn-ver-clave" type="button" tabindex="-1" title="Ver"><i class="fas fa-eye"></i></button></div>
+                        </div>
+                        <small class="text-muted">Mínimo 8, con letras y números.</small>
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="claveRepetir">Repite la nueva:</label>
+                        <input class="form-control" type="password" id="claveRepetir" autocomplete="new-password">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer text-right">
+                    <button type="button" id="btnGuardarPerfil" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Guardar cambios</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/cuenta/perfil.js?v=20261010"></script>
+</body>
+</html>

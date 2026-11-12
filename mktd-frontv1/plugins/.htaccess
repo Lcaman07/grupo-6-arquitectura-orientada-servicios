@@ -1,0 +1,6 @@
+# Librerías de terceros: no cambian entre versiones del sistema -> 30 días en el navegador
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|json|woff2?|ttf|eot|svg|png|gif)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>

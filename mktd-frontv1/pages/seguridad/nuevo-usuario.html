@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Inicio</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" type="text/javascript" defer></script>
+  <!-- Treeview -->
+  <link href="../../plugins/hummingbird-treeview-master/hummingbird-treeview.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <style>
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #161d29;
+      width: 100%;
+      height: 100%;
+      opacity: 0.5;
+      z-index: 999999;
+    }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <!-- Navbar -->
+    <div id="navBar"></div>
+    <!-- /.navbar -->
+    <!-- Main Sidebar Container -->
+    <!-- ------------------------------------------------------------------------------ -->
+    <!-- <div id="asideBar"></div> -->
+    <aside-component></aside-component>
+    <!-- Content Wrapper. Contains page content -->
+    <!-- ------------------------------------------------------------------------------ -->
+    <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+
+            <div class="col-sm-6">
+              <h1 class="m-0 text-dark">Nuevo Usuario</h1>
+            </div><!-- /.col -->
+
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Usuarios</a></li>
+                <li class="breadcrumb-item active">Nuevo Usuario</li>
+              </ol>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+      <!-- Main content -->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card card-primary card-outline">
+                <div class="card-body">
+                  <form id="regint-formulario" onkeypress="if(event.keyCode == 13) { return false; }" onsubmit="return false;" autocomplete="off">
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="nombres">Nombres:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" id="nombres" name="nombres" maxlength="100">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="apellidos">Apellidos:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" id="apellidos" name="apellidos" maxlength="100">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="dni">Documento:<span class="text-danger">*</span></label>
+                        <div class="input-group">
+                          <select class="form-control" id="idTipoDocumento" name="idTipoDocumento" style="max-width: 40%;"></select>
+                          <input class="form-control" type="text" id="dni" name="dni" maxlength="12" placeholder="N° documento" style="text-transform: uppercase;">
+                        </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="telefono">Teléfono:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="tel" id="telefono" name="telefono" maxlength="9" inputmode="numeric">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="correo">Correo:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="email" id="correo" name="correo" maxlength="100">
+                        <small class="text-muted">Lo usa "¿Olvidaste tu contraseña?" para enviar el enlace.</small>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="rol">Rol:<span class="text-danger">*</span></label>
+                        <select id="rol" name="rol" class="form-control"></select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <label for="usuario">Usuario:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="text" id="usuario" name="usuario" maxlength="50" autocomplete="off">
+                      </div>
+                      <!-- contraseña inicial: solo al crear. Después cada usuario la cambia en "Mi perfil" -->
+                      <div class="form-group col-md-6" id="grupoContrasena">
+                        <label for="contrasena">Contraseña inicial:<span class="text-danger">*</span></label>
+                        <input class="form-control" type="password" id="contrasena" name="contrasena" autocomplete="new-password">
+                        <small class="text-muted">Mínimo 8, con letras y números. El usuario la cambia luego en <b>Mi perfil</b>.</small>
+                      </div>
+                      <div class="form-group col-md-6" id="notaEdicion" style="display: none;">
+                        <label>Contraseña y foto:</label>
+                        <p class="text-muted small mb-0"><i class="fas fa-info-circle mr-1"></i>Cada usuario las cambia en <b>Mi perfil</b>. Si olvidó su contraseña, usa "¿Olvidaste tu contraseña?" en el ingreso.</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <div class="custom-control custom-checkbox">
+                          <input class="custom-control-input" type="checkbox" id="customCheckbox1" checked>
+                          <label for="customCheckbox1" class="custom-control-label">Activo</label>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="card-footer justify-content-between">
+                  <div class="row">
+                    <div class="col-xs-12">
+                      <a href="javascript: fnCommon.opcionesEstaticas(3);" id="btnConfirmar" class="btn btn-default">
+                        <i class="fas fa-arrow-left mr-1"></i> Regresar </a>
+                      <button type="button" id="rmGuardar" class="btn btn-primary ml-2"><i class="fas fa-save mr-1"></i> Guardar</button>    
+                                       
+                    </div>
+                  </div> 
+                </div>
+              </div><!-- /.card card-primary card-outline -->
+            </div>
+          </div> <!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <!-- Main Footer -->
+    <!-- ------------------------------------------------------------------------------ -->
+    <div id="footerBar"></div>
+  </div>
+  <!-- ./wrapper -->
+  <!-- REQUIRED SCRIPTS -->
+  <!-- jQuery -->
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <!-- jquery-validation -->
+  <script src="../../plugins/jquery-validation/jquery.validate.min.js"></script>
+  <script src="../../plugins/jquery-validation/additional-methods.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/seguridad/nuevo-usuario.js?v=20261010"></script>
+</body>
+
+</html>

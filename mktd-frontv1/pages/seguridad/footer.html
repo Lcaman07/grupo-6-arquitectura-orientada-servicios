@@ -1,0 +1,31 @@
+<!-- ------------------------------------------------------------------------------ -->
+<style>
+  /* CONFIGURACIÓN ESTILÍSTICA PREMIUM PARA EL FOOTER */
+  footer.main-footer {
+    background-color: var(--gwu-footer, #232c3d) !important; /* color: Seguridad > Apariencia */
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important; /* Separador sutil superior */
+    color: rgba(255, 255, 255, 0.5) !important; /* Texto gris suave para no fatigar la vista */
+    font-size: 0.85rem;
+    padding: 15px 20px !important;
+  }
+
+  /* Color destacado para el nombre de la empresa */
+  footer.main-footer strong {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  /* Color acentuado para la versión o detalles técnicos */
+  footer.main-footer b {
+    color: var(--gwu-rojo, #2f81f7) !important; /* color principal */
+  }
+</style>
+
+<footer class="main-footer">
+    <strong>Copyright &copy; <label id="anio"></label> MarketData Perú S.A.C.</strong> Todos los derechos reservados
+    <script>
+      document.getElementById("anio").innerHTML = new Date().getFullYear();
+    </script>
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 1.0
+    </div>
+</footer>

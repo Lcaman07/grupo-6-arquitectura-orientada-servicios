@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Apariencia</title>
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" type="text/javascript" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+    .fila-color { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gwu-borde); }
+    .fila-color:last-child { border-bottom: 0; }
+    .fila-color .texto { flex: 1; min-width: 0; }
+    .fila-color .texto b { display: block; }
+    .fila-color .texto small { color: var(--gwu-texto-tenue); }
+    .fila-color input[type=color] { width: 46px; height: 36px; padding: 2px; border-radius: 8px; border: 1px solid var(--gwu-borde-fuerte); background: transparent; cursor: pointer; }
+    .fila-color .hex { width: 96px; font-family: monospace; text-transform: lowercase; }
+    .grupo-titulo { font-size: .75rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gwu-texto-tenue); margin: 18px 0 2px; }
+    .grupo-titulo:first-child { margin-top: 0; }
+    .previa-login { position: relative; height: 230px; border-radius: 10px; overflow: hidden; background-color: var(--gwu-login-fondo, #0f141d);
+      background-image: var(--gwu-login-imagen, url('../../dist/img/fondo-marketdata.svg')); background-size: cover; background-position: center;
+      border: 1px solid var(--gwu-borde-fuerte); }
+    .previa-login .caja { position: absolute; left: 8%; top: 50%; transform: translateY(-50%); width: 46%; padding: 14px; border-radius: 12px;
+      background: var(--gwu-login-tarjeta, rgba(18, 18, 18, .6)); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, .12); }
+    .previa-login .linea { height: 10px; border-radius: 4px; background: rgba(255, 255, 255, .14); margin-bottom: 8px; }
+    .previa-login .boton { height: 16px; border-radius: 6px; background: var(--gwu-rojo); margin-top: 12px; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6"><h1 class="m-0 text-dark">Apariencia</h1></div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Seguridad</a></li>
+                <li class="breadcrumb-item active">Colores y fondo del login</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-7">
+              <div class="card card-primary card-outline">
+                <div class="card-header">
+                  <h3 class="card-title">Colores</h3>
+                  <div class="card-tools"><span class="text-muted small">Los cambios se ven al momento en esta pantalla; al guardar llegan a todos.</span></div>
+                </div>
+                <div class="card-body" id="listaColores"></div>
+                <div class="card-footer d-flex justify-content-between flex-wrap">
+                  <button type="button" id="btnRestaurar" class="btn btn-default mb-1"><i class="fas fa-undo mr-1"></i> Colores originales</button>
+                  <div>
+                    <button type="button" id="btnDeshacer" class="btn btn-default mb-1 mr-1"><i class="fas fa-times mr-1"></i> Descartar cambios</button>
+                    <button type="button" id="btnGuardar" class="btn btn-primary mb-1"><i class="fas fa-save mr-1"></i> Guardar colores</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Fondo del login</h3></div>
+                <div class="card-body">
+                  <div class="previa-login mb-3" id="previaLogin">
+                    <div class="caja"><div class="linea" style="width: 60%;"></div><div class="linea"></div><div class="linea"></div><div class="boton"></div></div>
+                  </div>
+                  <p class="text-muted small mb-2" id="txtFondo"></p>
+                  <input type="file" id="archivoFondo" accept="image/*" style="display: none;">
+                  <button type="button" id="btnFondo" class="btn btn-primary btn-sm mr-1"><i class="fas fa-image mr-1"></i> Cambiar imagen</button>
+                  <button type="button" id="btnQuitarFondo" class="btn btn-default btn-sm"><i class="fas fa-trash mr-1"></i> Volver a la original</button>
+                  <p class="text-muted small mt-2 mb-0">Se achica sola antes de subirla (ancho máximo <span id="txtPx">1920</span> px). Una foto horizontal se ve mejor.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/seguridad/apariencia.js?v=20261010"></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>MarketData | Multitabla</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Tema del sistema -->
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" type="text/javascript" defer></script>
+  <style>
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #161d29;
+      width: 100%;
+      height: 100%;
+      opacity: 0.5;
+      z-index: 999999;
+    }
+    .input-escaneo { font-size: 1.25rem; letter-spacing: .05em; }
+    .req { color: #7db4ff; margin-left: 2px; }
+    .ayuda-garantia { font-size: .8rem; }
+    #contAtributos .form-group label { font-weight: 600; }
+    .btn-agregar-mt { min-width: 38px; }
+    #tablaTablas tbody tr { cursor: pointer; }
+    #tablaTablas tbody tr.seleccionada td { background: rgba(47, 129, 247, 0.18) !important; }
+  </style>
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div id="preloader" class="preloader" style="display: none;"></div>
+
+  <div class="wrapper">
+
+    <!-- Navbar -->
+    <div id="navBar"></div>
+
+    <!-- Main Sidebar Container -->
+    <aside-component></aside-component>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 class="m-0 text-dark">Multitabla</h1>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Maestros</a></li>
+                <li class="breadcrumb-item active">Catálogos y parámetros</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title">Tablas</h3></div>
+                <div class="card-body">
+                  <table id="tablaTablas" class="table table-bordered table-striped table-sm w-100">
+                    <thead>
+                      <tr><th>Código</th><th>Tabla</th><th>Valores</th></tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title" id="tituloValores">Seleccione una tabla</h3></div>
+                <div class="card-body">
+                  <p class="text-muted" id="ayudaTabla">Cada tabla indica qué se puede cambiar. En los catálogos del sistema (estados y tipos) el código no cambia: solo el texto que ve el usuario, el color y la explicación.</p>
+                  <div class="row" id="filaPadre" style="display: none;">
+                    <div class="form-group col-lg-6">
+                      <label for="filtroPadre"><span id="lblPadre">Pertenece a</span>:</label>
+                      <select class="form-control select2" id="filtroPadre" name="filtroPadre" style="width: 100%;"></select>
+                    </div>
+                  </div>
+                  <div class="form-group row" style="justify-content: flex-end;">
+                    <button type="button" class="btn btn-primary" id="btnNuevoValor" style="display: none;"><i class="fas fa-plus"></i> Nuevo valor</button>
+                  </div>
+                  <table id="tablaValores" class="table table-bordered table-striped table-sm w-100">
+                    <thead>
+                      <tr><th>Código</th><th>Valor</th><th>Valor aux</th><th>Valor aux 2</th><th>Orden</th><th>Estado</th><th>Acción</th></tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="modalValor" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="tituloModal">Valor</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                  <input type="hidden" id="idMultitabla">
+                  <div class="row">
+                    <div class="form-group col-lg-4">
+                      <label for="codigo">Código:</label>
+                      <input class="form-control" type="text" id="codigo" name="codigo" maxlength="100" placeholder="Vacío = número automático" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group col-lg-2">
+                      <label for="orden">Orden:</label>
+                      <input class="form-control" type="number" id="orden" name="orden" min="0" step="1">
+                    </div>
+                    <div class="form-group col-lg-6">
+                      <label for="valor">Valor:<span class="req">*</span></label>
+                      <input class="form-control" type="text" id="valor" name="valor" maxlength="200">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-lg-4">
+                      <label for="valorAux"><span id="lblValorAux">Valor aux</span>:</label>
+                      <input class="form-control" type="text" id="valorAux" name="valorAux" maxlength="200">
+                      <select class="form-control" id="valorAuxColor" style="display: none;"></select>
+                    </div>
+                    <div class="form-group col-lg-8">
+                      <label for="valorAux2"><span id="lblValorAux2">Valor aux 2</span>:</label>
+                      <input class="form-control" type="text" id="valorAux2" name="valorAux2" maxlength="200">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-lg-6 grupo-padre">
+                      <label for="codigoPadre"><span id="lblPadreModal">Pertenece a</span>:</label>
+                      <select class="form-control select2" id="codigoPadre" name="codigoPadre" style="width: 100%;"></select>
+                    </div>
+                    <div class="form-group col-lg-6 d-flex align-items-end"><div id="muestraColor"></div></div>
+                  </div>
+                  <p class="text-muted mb-0" id="ayudaModal"></p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button type="button" id="btnGuardarValor" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+    <div id="footerBar"></div>
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- jQuery -->
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables -->
+  <script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+  <script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+  <script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+  <script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+  <!-- Select2 -->
+  <script src="../../plugins/select2/js/select2.full.min.js"></script>
+  <!-- jquery-validation -->
+  <script src="../../plugins/jquery-validation/jquery.validate.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/maestros/multitabla.js?v=20261010"></script>
+</body>
+
+</html>

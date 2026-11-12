@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Bitácora de integración</title>
+  <link rel="icon" href="../../dist/img/marketdata-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010" id="gwu-theme">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-7"><h1 class="m-0">Bitácora de integración</h1></div>
+            <div class="col-sm-5">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="../seguridad/principal.html">Inicio</a></li>
+                <li class="breadcrumb-item">Integración SOA</li><li class="breadcrumb-item active">Bitácora</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+
+          <div class="row" id="cajaEstado"></div>
+
+          <div class="row">
+            <div class="col-lg-7">
+              <div class="card card-primary card-outline">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-line mr-1"></i> Resultados por servicio</h3></div>
+                <div class="card-body p-0 table-responsive">
+                  <table class="table table-sm mb-0" id="tablaResumen">
+                    <thead><tr><th>Servicio</th><th class="md-num">Llamadas</th><th class="md-num">% éxito</th><th class="md-num">Recuperadas con reintento</th><th class="md-num">Tiempo prom.</th><th class="md-num">Tiempo máx.</th></tr></thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="card card-info card-outline">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-vial mr-1"></i> Guía de pruebas (Cap. 2.5.4)</h3></div>
+                <div class="card-body">
+                  <ol class="pl-3 mb-0 md-ayuda" style="font-size: .86rem;">
+                    <li><b>Consulta Territorial / Empresarial:</b> analiza una zona nueva y revisa aquí el estado HTTP, los datos y el tiempo.</li>
+                    <li><b>Orquestación:</b> en el análisis mira "Cómo se obtuvo": ambos servicios corren en paralelo y el tiempo total ≈ el más lento.</li>
+                    <li><b>Falla de fuente:</b> pon un servicio en <i>Intermitente</i> (se recupera con reintento) o <i>Caído</i> (el análisis queda PARCIAL o usa la caché vencida).</li>
+                    <li><b>Persistencia / caché:</b> analiza otra vez la misma zona: el origen pasa a "Caché MySQL" y no hay nuevas filas en esta bitácora.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-primary card-outline">
+            <div class="card-header"><h3 class="card-title"><i class="fas fa-stream mr-1"></i> Llamadas a INEI y SUNAT</h3></div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group col-md-3">
+                  <label for="cboServicio">Servicio</label>
+                  <select class="form-control" id="cboServicio"><option value="">Todos</option><option value="INEI">INEI (REST)</option><option value="SUNAT">SUNAT (SOAP)</option></select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="cboExito">Resultado</label>
+                  <select class="form-control" id="cboExito"><option value="">Todos</option><option value="true">Exitosas</option><option value="false">Con error</option></select>
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="txtDesde">Desde</label>
+                  <input type="date" class="form-control" id="txtDesde">
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="txtHasta">Hasta</label>
+                  <input type="date" class="form-control" id="txtHasta">
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+                  <button type="button" class="btn btn-primary btn-block" id="btnBuscar"><i class="fas fa-search mr-1"></i> Buscar</button>
+                </div>
+              </div>
+              <table id="tablaBitacora" class="table table-sm table-striped mb-0" style="width: 100%;">
+                <thead><tr><th>N°</th><th>Fecha</th><th>Servicio</th><th>Operación</th><th>Parámetro</th><th class="text-center">HTTP</th><th class="text-center">Intentos</th><th class="md-num">Tiempo</th><th class="text-center">Resultado</th><th>Mensaje</th><th>Usuario</th></tr></thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+  <script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+  <script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+  <script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/comun-md.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/bitacora.js?v=20261010"></script>
+</body>
+</html>

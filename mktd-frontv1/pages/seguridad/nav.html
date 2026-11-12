@@ -1,0 +1,79 @@
+<!-- ------------------------------------------------------------------------------ -->
+<style>
+  /* CONFIGURACIÓN ESTILÍSTICA PREMIUM PARA EL NAVBAR */
+  nav.main-header.navbar {
+    background: var(--gwu-nav, rgba(15, 15, 15, 0.6)) !important; /* color: Seguridad > Apariencia */
+    backdrop-filter: blur(10px) !important;       /* Efecto esmerilado de alta gama */
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; /* Línea de luz sutil en la parte inferior */
+    padding: 8px 16px !important;
+  }
+
+  /* Color de los iconos y texto en estado pasivo */
+  nav.main-header.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Efecto Hover: Brilla en el rojo deportivo al pasar el cursor o hacer clic */
+  nav.main-header.navbar .nav-link:hover,
+  nav.main-header.navbar .nav-link:hover i {
+    color: var(--gwu-rojo, #2f81f7) !important; /* color principal */
+    background: transparent !important;
+  }
+
+  /* Ajuste de iconos específicos para que hereden la transición */
+  nav.main-header.navbar .nav-link i {
+    color: rgba(255, 255, 255, 0.7) !important;
+    transition: color 0.3s ease;
+  }
+</style>
+
+<!-- Se removió la clase nativa 'navbar-blue' para evitar el color azul de fábrica -->
+<nav class="main-header navbar navbar-expand navbar-dark">
+
+   <!-- Left navbar links -->
+   <ul class="navbar-nav">
+     <li class="nav-item">
+       <a class="nav-link" data-widget="pushmenu" href="#" role="button" title="Menú">
+         <i class="fas fa-bars"></i>
+       </a>
+     </li>
+   </ul>
+
+   <!-- Right navbar links: usuario (Mi perfil / Cerrar sesión). En el celular queda solo el ícono y siempre se ve -->
+   <ul class="navbar-nav ml-auto">
+     <li class="nav-item dropdown">
+       <a class="nav-link" data-toggle="dropdown" href="#" id="navUsuario" role="button" aria-haspopup="true" aria-expanded="false" title="Mi cuenta">
+         <i class="fas fa-user-circle fa-lg"></i>
+         <span class="d-none d-sm-inline ml-2" id="navNombreUsuario"></span>
+         <i class="fas fa-angle-down ml-1 d-none d-sm-inline"></i>
+       </a>
+       <div class="dropdown-menu dropdown-menu-right gwu-menu-usuario" aria-labelledby="navUsuario">
+         <span class="dropdown-item-text small" id="navRolUsuario"></span>
+         <div class="dropdown-divider"></div>
+         <a href="../cuenta/perfil.html" class="dropdown-item"><i class="fas fa-id-card fa-fw mr-2"></i> Mi perfil</a>
+         <div class="dropdown-divider"></div>
+         <a href="javascript: fnCommon.opcionesEstaticas(2);" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt fa-fw mr-2"></i> Cerrar sesión</a>
+       </div>
+     </li>
+     <!-- acceso directo a cerrar sesión (también en el celular) -->
+     <li class="nav-item">
+       <a href="javascript: fnCommon.opcionesEstaticas(2);" class="nav-link" title="Cerrar sesión">
+         <i class="fa fa-sign-out-alt fa-fw"></i><span class="d-none d-md-inline">&nbsp; Cerrar Sesión</span>
+       </a>
+     </li>
+   </ul>
+</nav>
+<script>
+  (function () {
+    var s = JSON.parse(localStorage.getItem("usuarioSesion") || "null") || {};
+    var txt = function (t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+    document.getElementById("navNombreUsuario").innerHTML = txt(s.nombreCorto || s.nombreUsuario || s.codigoUsuario || "");
+    document.getElementById("navRolUsuario").innerHTML = "<b>" + txt(s.nombreUsuario || "") + "</b><br>" + txt(s.codigoUsuario || "") +
+      (s.nombreRol ? " &middot; <span class='badge badge-secondary'>" + txt(s.nombreRol) + "</span>" : "");
+  })();
+</script>

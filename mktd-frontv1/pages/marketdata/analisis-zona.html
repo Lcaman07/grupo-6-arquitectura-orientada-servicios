@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>MarketData | Análisis de zona</title>
+  <link rel="icon" href="../../dist/img/marketdata-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../../plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="../../dist/css/gwu-theme.css?v=20261010" id="gwu-theme">
+  <script src="../../dist/js/pages/seguridad/aside.js?v=20261010" defer></script>
+  <style>
+    #preloader { position: fixed; top: 0; left: 0; background-color: #161d29; width: 100%; height: 100%; opacity: 0.5; z-index: 999999; }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+  <div id="preloader" class="preloader" style="display: none;"></div>
+  <div class="wrapper">
+    <div id="navBar"></div>
+    <aside-component></aside-component>
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-7"><h1 class="m-0">Análisis de zona</h1></div>
+            <div class="col-sm-5">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="../seguridad/principal.html">Inicio</a></li>
+                <li class="breadcrumb-item">Análisis de mercado</li><li class="breadcrumb-item active">Análisis de zona</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="container-fluid">
+
+          <!-- Solicitud: el dashboard hace UNA sola llamada al Servicio Orquestador -->
+          <div class="card card-primary card-outline">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-search-location mr-1"></i> ¿Dónde quieres abrir el negocio?</h3>
+            </div>
+            <div class="card-body">
+              <form id="formAnalisis" onsubmit="return false;">
+                <div class="form-row">
+                  <div class="form-group col-md-3">
+                    <label for="cboDepartamento">Departamento</label>
+                    <select class="form-control" id="cboDepartamento"></select>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="cboProvincia">Provincia</label>
+                    <select class="form-control" id="cboProvincia"></select>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="cboDistrito">Distrito</label>
+                    <select class="form-control" id="cboDistrito"></select>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="cboRubro">Rubro del negocio (opcional)</label>
+                    <select class="form-control" id="cboRubro"></select>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap align-items-center justify-content-between">
+                  <div class="md-ayuda mb-2">Se analiza el nivel más detallado que elijas. Con un rubro, la competencia se mide solo con las empresas de ese rubro.</div>
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="custom-control custom-switch mr-3" id="grupoForzar" style="display: none;">
+                      <input type="checkbox" class="custom-control-input" id="chkForzar">
+                      <label class="custom-control-label" for="chkForzar" title="No usa la caché de MySQL: llama de nuevo al INEI y a la SUNAT">Consultar sin caché</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btnAnalizar"><i class="fas fa-play mr-1"></i> Analizar zona</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div id="sinResultado" class="card"><div class="card-body md-vacio"><i class="fas fa-map-marked-alt"></i>Elige una zona y presiona <b>Analizar zona</b>.<br>Se consultan en paralelo el INEI (población) y la SUNAT (empresas) y se consolida el resultado.</div></div>
+
+          <div id="resultado" style="display: none;">
+            <!-- Cabecera del resultado -->
+            <div class="card">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-lg-7 mb-3 mb-lg-0">
+                    <div class="md-zona-sub" id="lblNivel"></div>
+                    <h2 class="md-zona-titulo" id="lblZona"></h2>
+                    <div class="mt-2" id="lblEstado"></div>
+                    <div class="md-ayuda mt-2" id="lblMeta"></div>
+                  </div>
+                  <div class="col-sm-6 col-lg-2 md-indice mb-3 mb-sm-0">
+                    <div class="md-zona-sub">Índice de atractivo</div>
+                    <div class="md-indice-valor" id="lblIndice">-</div>
+                    <div class="md-indice-nivel" id="lblNivelIndice"></div>
+                  </div>
+                  <div class="col-sm-6 col-lg-3 text-sm-right">
+                    <a href="#" class="btn btn-outline-primary btn-sm mb-1" id="btnComparar"><i class="fas fa-balance-scale mr-1"></i> Comparar con otras zonas</a>
+                    <button type="button" class="btn btn-default btn-sm mb-1" id="btnReanalizar"><i class="fas fa-redo mr-1"></i> Volver a analizar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-warning" id="cajaAvisos" style="display: none;"></div>
+
+            <div class="row">
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="#">
+                <span class="gwu-kpi-icono"><i class="fas fa-users"></i></span>
+                <span class="gwu-kpi-texto">Población</span>
+                <span class="gwu-kpi-valor" id="kpiPoblacion">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="#">
+                <span class="gwu-kpi-icono"><i class="fas fa-th"></i></span>
+                <span class="gwu-kpi-texto">Habitantes por km²</span>
+                <span class="gwu-kpi-valor" id="kpiDensidad">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="#">
+                <span class="gwu-kpi-icono"><i class="fas fa-hand-holding-usd"></i></span>
+                <span class="gwu-kpi-texto">Pobreza</span>
+                <span class="gwu-kpi-valor" id="kpiPobreza">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="#">
+                <span class="gwu-kpi-icono"><i class="fas fa-building"></i></span>
+                <span class="gwu-kpi-texto">Empresas activas</span>
+                <span class="gwu-kpi-valor" id="kpiEmpresas">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="#">
+                <span class="gwu-kpi-icono"><i class="fas fa-store"></i></span>
+                <span class="gwu-kpi-texto">Empresas por mil hab.</span>
+                <span class="gwu-kpi-valor" id="kpiPorMil">-</span>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+              <a class="gwu-kpi" href="#">
+                <span class="gwu-kpi-icono"><i class="fas fa-crosshairs"></i></span>
+                <span class="gwu-kpi-texto">Competidores del rubro</span>
+                <span class="gwu-kpi-valor" id="kpiRubro">-</span>
+              </a>
+            </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-5">
+                <div class="card card-primary card-outline">
+                  <div class="card-header"><h3 class="card-title">¿Por qué este índice?</h3></div>
+                  <div class="card-body" id="desgloseIndice"></div>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="card card-primary card-outline">
+                  <div class="card-header"><h3 class="card-title">Empresas activas por sector (SUNAT)</h3></div>
+                  <div class="card-body"><div class="gwu-grafico" style="height: 320px;"><canvas id="graficoSectores" role="img" aria-label="Empresas activas por sector"></canvas></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="card card-primary card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-users mr-1"></i> Indicadores territoriales (INEI)</h3>
+                    <div class="card-tools" id="origenT"></div>
+                  </div>
+                  <div class="card-body p-0"><table class="table table-sm md-tabla-dl mb-0" id="tablaTerritorial"><tbody></tbody></table></div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-primary card-outline">
+                  <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-building mr-1"></i> Concentración empresarial (SUNAT)</h3>
+                    <div class="card-tools" id="origenE"></div>
+                  </div>
+                  <div class="card-body p-0"><table class="table table-sm md-tabla-dl mb-0" id="tablaEmpresarial"><tbody></tbody></table></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-primary card-outline">
+              <div class="card-header"><h3 class="card-title"><i class="fas fa-list mr-1"></i> Empresas de ejemplo en la zona</h3></div>
+              <div class="card-body p-0 table-responsive">
+                <table class="table table-sm table-striped mb-0" id="tablaMuestra">
+                  <thead><tr><th>RUC</th><th>Razón social</th><th>Sector</th><th>Actividad (CIIU)</th><th class="text-center">Estado</th><th class="text-center">Condición</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Trazabilidad de la orquestación SOA (BPMN del Cap. 2.4.1) -->
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="card card-info card-outline">
+                  <div class="card-header"><h3 class="card-title"><i class="fas fa-project-diagram mr-1"></i> Cómo se obtuvo (orquestación)</h3></div>
+                  <div class="card-body"><ul class="md-traza" id="listaTraza"></ul></div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-info card-outline">
+                  <div class="card-header"><h3 class="card-title"><i class="fas fa-plug mr-1"></i> Servicios invocados</h3></div>
+                  <div class="card-body"><div class="row" id="cajaServicios"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footerBar"></div>
+  </div>
+
+  <script src="../../plugins/jquery/jquery.min.js"></script>
+  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../../plugins/chart.js/Chart.min.js"></script>
+  <script src="../../dist/js/adminlte.min.js"></script>
+  <script src="../../plugins/sweetalert2/sweetalert2.min.js"></script>
+  <script src="../../dist/js/pages/common/common.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/comun-md.js?v=20261010"></script>
+  <script src="../../dist/js/pages/marketdata/analisis-zona.js?v=20261010"></script>
+</body>
+</html>
