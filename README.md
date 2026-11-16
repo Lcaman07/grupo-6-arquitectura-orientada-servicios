@@ -88,4 +88,3 @@ Usuario de prueba: `analista` / `Analista2026` (rol ANALISTA DE MERCADO).
 | `Falta la variable JWT_SECRET` | `JWT_SECRET` vacío | Coloca un valor en `.env` |
 | Apache no inicia en XAMPP | Otro programa usa el puerto 80 | Cierra ese programa o cambia el puerto de Apache |
 | El login se ve sin estilos | Falta la carpeta `dist` en la copia de `htdocs` | Vuelve a copiar `mktd-front` completo |
-Integrante: Xavier Alexander.
