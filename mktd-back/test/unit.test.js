@@ -154,3 +154,55 @@ test('Servicios simulados: determinísticos y coherentes', () => {
     assert.strictEqual(mocks.datosRuc(c.ruc).razonSocial, c.razonSocial); //-- consultar el RUC devuelve lo mismo
   });
 });
+
+//-- ===================== UTILITARIOS =====================
+const util = require('../src/utils/utilitarios');
+
+test('utilitarios.toInt: convierte números y rechaza vacíos, espacios y decimales', () => {
+  assert.strictEqual(util.toInt('5'), 5);
+  assert.strictEqual(util.toInt(' 7 '), 7);
+  assert.strictEqual(util.toInt(0), 0);
+  assert.strictEqual(util.toInt(''), null);
+  assert.strictEqual(util.toInt('   '), null); //-- antes devolvía 0
+  assert.strictEqual(util.toInt(null), null);
+  assert.strictEqual(util.toInt(undefined), null);
+  assert.strictEqual(util.toInt('3.5'), null);
+  assert.strictEqual(util.toInt('abc'), null);
+  assert.strictEqual(util.toInt(true), null);
+});
+
+test('utilitarios.toBool: acepta true/1 y tolera espacios y mayúsculas', () => {
+  assert.strictEqual(util.toBool(true), true);
+  assert.strictEqual(util.toBool(1), true);
+  assert.strictEqual(util.toBool('1'), true);
+  assert.strictEqual(util.toBool(' TRUE '), true);
+  assert.strictEqual(util.toBool(false), false);
+  assert.strictEqual(util.toBool('false'), false);
+  assert.strictEqual(util.toBool(undefined), false);
+  assert.strictEqual(util.toBool(null), false);
+});
+
+test('utilitarios.encriptarTexto: oculta caracteres y maneja null', () => {
+  assert.strictEqual(util.encriptarTexto('12345678', 3), '123*****');
+  assert.strictEqual(util.encriptarTexto('abc', 5), 'abc');
+  assert.strictEqual(util.encriptarTexto('abcd', 0, '#'), '####');
+  assert.strictEqual(util.encriptarTexto(null, 2), ''); //-- antes devolvía "nu**"
+  assert.strictEqual(util.encriptarTexto(undefined, 2), '');
+});
+
+test('utilitarios: esVacio, esNumero y obtenerRedondeado', () => {
+  assert.ok(util.esVacio('   '));
+  assert.ok(util.esVacio(null));
+  assert.ok(!util.esVacio('a'));
+  assert.ok(util.esNumero('0123'));
+  assert.ok(!util.esNumero('12a'));
+  assert.strictEqual(util.obtenerRedondeado(3.14159, 2), 3.14);
+  assert.strictEqual(util.obtenerRedondeado('2.345', 1), 2.3);
+});
+
+test('RUC: casos borde (null, espacios, esValido)', () => {
+  assert.match(ruc.motivoInvalido(null), /11 dígitos/);
+  assert.strictEqual(ruc.motivoInvalido(' 20131312955 '), null);
+  assert.strictEqual(ruc.esValido('20131312955'), true);
+  assert.strictEqual(ruc.esValido('20131312956'), false);
+});

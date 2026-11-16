@@ -18,25 +18,30 @@ const obtenerRedondeado = (numero, cantidadDecimales) => {
   return Math.round((Number(numero) + Number.EPSILON) * f) / f;
 };
 
-/** Ocultar texto dejando visibles los primeros "cantidad" caracteres */
-const encriptarTexto = (texto, cantidad, caracter = '*') =>
-  String(texto)
-    .split('')
-    .map((c, i) => (i + 1 <= cantidad ? c : caracter))
-    .join('');
+/**
+ * Ocultar texto dejando visibles los primeros "cantidad" caracteres.
+ * Si el texto es null/undefined devuelve '' (antes devolvía "****" a partir de la palabra "null").
+ */
+const encriptarTexto = (texto, cantidad, caracter = '*') => {
+  if (texto === undefined || texto === null) return '';
+  const visibles = Math.max(0, Number(cantidad) || 0);
+  const t = String(texto);
+  return t.slice(0, visibles) + caracter.repeat(Math.max(0, t.length - visibles));
+};
 
 /** Captura el stacktrace de una excepción */
 const obtenerStackTraceFromException = (err) => (err && err.stack) || String(err);
 
 /** Convierte a entero (como hace Jackson con "5" -> 5). Devuelve null si no se puede */
 const toInt = (v) => {
-  if (v === undefined || v === null || v === '') return null;
-  const n = Number(v);
+  //-- esVacio cubre también cadenas con solo espacios ("  "), que Number() convertía en 0
+  if (esVacio(v) || typeof v === 'boolean') return null;
+  const n = Number(typeof v === 'string' ? v.trim() : v);
   return Number.isInteger(n) ? n : null;
 };
 
 /** Convierte a boolean primitivo (en Java un boolean ausente vale false) */
-const toBool = (v) => v === true || v === 1 || v === '1' || String(v).toLowerCase() === 'true';
+const toBool = (v) => v === true || v === 1 || String(v).trim().toLowerCase() === 'true' || String(v).trim() === '1';
 
 module.exports = {
   obtenerMensaje,
