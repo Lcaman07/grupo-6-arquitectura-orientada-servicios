@@ -1,6 +1,16 @@
 # grupo-6-arquitectura-orientada-servicios
 Proyecto del Grupo 6 - Curso de Arquitectura Orientada a Servicios
 
+## Integrantes
+
+| Apellidos y Nombres | Cod Alumno |
+|---|---|
+| BECERRA YUPTÓN, XAVIER ALEXANDER  |  U21213574| 
+| CARPIO CHUMPITAZ, JOSÉ FERNANDO |  U22221842|
+| CAMAN FLORES, LUIS SANTIAGO  |  U20240253 |
+| VALENCIA FLORES, KARI LIZET | 1110867   |
+| VILCA MONJE, EDWARD ANIBAL |   U22307088 |
+
 **MarketData Perú**: plataforma de análisis territorial y empresarial que integra servicios del INEI (REST/JSON) y de la SUNAT (SOAP/XML).
 
 | Carpeta | Contenido | Tecnología |
@@ -88,5 +98,4 @@ Usuario de prueba: `analista` / `Analista2026` (rol ANALISTA DE MERCADO).
 | `Falta la variable JWT_SECRET` | `JWT_SECRET` vacío | Coloca un valor en `.env` |
 | Apache no inicia en XAMPP | Otro programa usa el puerto 80 | Cierra ese programa o cambia el puerto de Apache |
 | El login se ve sin estilos | Falta la carpeta `dist` en la copia de `htdocs` | Vuelve a copiar `mktd-front` completo |
-Integrante: Xavier Alexander.
-Integrante: Edward Anibal Vilca Monje
+
