@@ -89,3 +89,4 @@ Usuario de prueba: `analista` / `Analista2026` (rol ANALISTA DE MERCADO).
 | Apache no inicia en XAMPP | Otro programa usa el puerto 80 | Cierra ese programa o cambia el puerto de Apache |
 | El login se ve sin estilos | Falta la carpeta `dist` en la copia de `htdocs` | Vuelve a copiar `mktd-front` completo |
 Integrante: Xavier Alexander.
+Integrante: Edward Anibal Vilca Monje
