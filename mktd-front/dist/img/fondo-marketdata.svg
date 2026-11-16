@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="luz" cx="72%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#1d3b6e"/>
+      <stop offset=".55" stop-color="#0f1a2e"/>
+      <stop offset="1" stop-color="#0a0f19"/>
+    </radialGradient>
+    <pattern id="grilla" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".035" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="barra" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#2f81f7" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#2f81f7" stop-opacity=".7"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#luz)"/>
+  <rect width="1600" height="900" fill="url(#grilla)"/>
+
+  <!-- red de zonas (puntos conectados) -->
+  <g stroke="#5aa2ff" stroke-opacity=".28" stroke-width="1.4" fill="none">
+    <path d="M980 250 L1060 310 L1130 290 L1210 350 L1180 430 L1250 500 L1210 580 L1120 620 L1060 560 L990 600 L940 520 L980 450 L930 380 Z"/>
+    <path d="M1060 310 L1060 400 L1180 430 M1060 400 L980 450 M1060 400 L1120 480 L1250 500 M1120 480 L1060 560 M1120 480 L1210 580"/>
+  </g>
+  <g fill="#5aa2ff">
+    <circle cx="980" cy="250" r="5" opacity=".7"/><circle cx="1060" cy="310" r="7"/><circle cx="1130" cy="290" r="4" opacity=".7"/>
+    <circle cx="1210" cy="350" r="5" opacity=".8"/><circle cx="1180" cy="430" r="6"/><circle cx="1250" cy="500" r="4" opacity=".7"/>
+    <circle cx="1210" cy="580" r="5" opacity=".8"/><circle cx="1120" cy="620" r="4" opacity=".7"/><circle cx="1060" cy="560" r="6"/>
+    <circle cx="990" cy="600" r="4" opacity=".7"/><circle cx="940" cy="520" r="5" opacity=".8"/><circle cx="980" cy="450" r="6"/>
+    <circle cx="930" cy="380" r="4" opacity=".7"/><circle cx="1060" cy="400" r="9" fill="#ffd166"/><circle cx="1120" cy="480" r="7"/>
+  </g>
+  <circle cx="1060" cy="400" r="26" fill="none" stroke="#ffd166" stroke-opacity=".45" stroke-width="2"/>
+  <circle cx="1060" cy="400" r="48" fill="none" stroke="#ffd166" stroke-opacity=".18" stroke-width="2"/>
+
+  <!-- barras -->
+  <g fill="url(#barra)">
+    <rect x="1330" y="560" width="34" height="160" rx="4"/>
+    <rect x="1376" y="500" width="34" height="220" rx="4"/>
+    <rect x="1422" y="590" width="34" height="130" rx="4"/>
+    <rect x="1468" y="450" width="34" height="270" rx="4"/>
+  </g>
+  <path d="M1320 640 L1393 560 L1439 610 L1485 470 L1530 430" fill="none" stroke="#ffd166" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".85"/>
+
+  <!-- marca -->
+  <g transform="translate(860 120)">
+    <rect width="72" height="72" rx="16" fill="#2f81f7"/>
+    <rect x="15" y="38" width="9" height="18" rx="2" fill="#fff" opacity=".75"/>
+    <rect x="28" y="29" width="9" height="27" rx="2" fill="#fff" opacity=".9"/>
+    <rect x="41" y="42" width="9" height="14" rx="2" fill="#fff" opacity=".75"/>
+    <path d="M53 13c-5.6 0-10 4.4-10 10 0 7.3 10 17 10 17s10-9.7 10-17c0-5.6-4.4-10-10-10z" fill="#ffd166"/>
+    <circle cx="53" cy="23" r="3.8" fill="#2f81f7"/>
+    <text x="92" y="44" font-family="Segoe UI, Roboto, Arial, sans-serif" font-size="46" font-weight="700" fill="#ffffff">Market<tspan fill="#5aa2ff">Data</tspan> Perú</text>
+    <text x="94" y="72" font-family="Segoe UI, Roboto, Arial, sans-serif" font-size="17" letter-spacing="3" fill="#ffffff" fill-opacity=".6">INTELIGENCIA TERRITORIAL Y EMPRESARIAL</text>
+  </g>
+  <g font-family="Segoe UI, Roboto, Arial, sans-serif" font-size="16" fill="#ffffff" fill-opacity=".55" transform="translate(862 790)">
+    <text>INEI · población e indicadores por UBIGEO</text>
+    <text y="28">SUNAT · empresas, rubro y condición por zona</text>
+  </g>
+</svg>
