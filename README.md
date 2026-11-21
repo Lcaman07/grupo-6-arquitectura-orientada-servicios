@@ -105,3 +105,4 @@ Usuario de prueba: `analista` / `Analista2026` (rol ANALISTA DE MERCADO).
 - **"La ejecución de scripts está deshabilitada"**: ejecutar `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`.
 - **MySQL de XAMPP se apaga solo**: otro MySQL ocupa el puerto 3306; detener ese servicio en Services y volver a iniciar XAMPP.
 - **`npm install` falla en `mktd-front` (node-sass)**: no hace falta instalarlo; el front ya viene compilado, se abre con Live Server desde `index.html`.
+Probado en Windows con Node.js v26.13.1 y XAMPP 3.3.0.
