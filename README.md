@@ -99,3 +99,9 @@ Usuario de prueba: `analista` / `Analista2026` (rol ANALISTA DE MERCADO).
 | Apache no inicia en XAMPP | Otro programa usa el puerto 80 | Cierra ese programa o cambia el puerto de Apache |
 | El login se ve sin estilos | Falta la carpeta `dist` en la copia de `htdocs` | Vuelve a copiar `mktd-front` completo |
 
+## Problemas adicionales al instalar en Windows
+
+- **`npm` o `node` no se reconoce**: instalar Node.js LTS y reiniciar VS Code o la PC.
+- **"La ejecución de scripts está deshabilitada"**: ejecutar `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`.
+- **MySQL de XAMPP se apaga solo**: otro MySQL ocupa el puerto 3306; detener ese servicio en Services y volver a iniciar XAMPP.
+- **`npm install` falla en `mktd-front` (node-sass)**: no hace falta instalarlo; el front ya viene compilado, se abre con Live Server desde `index.html`.
