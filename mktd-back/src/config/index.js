@@ -90,6 +90,11 @@ module.exports = {
     mocksHabilitados: bool('MOCKS_HABILITADOS', 'true'),
   },
 
+  //-- Documentación de la API (Swagger UI en {contexto}/swagger-ui). En producción se puede apagar
+  swagger: {
+    habilitado: bool('SWAGGER_HABILITADO', 'true'),
+  },
+
   //-- Seguridad / JWT
   jwt: {
     secret: requerido('JWT_SECRET'),

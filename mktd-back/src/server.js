@@ -24,6 +24,7 @@ async function iniciar() {
     LOGGER.info(`MarketData API [perfil ${config.profile}] escuchando en http://${config.server.host}:${config.server.port}${config.server.contextPath}`);
     LOGGER.info(`INEI  (REST) -> ${config.integracion.ineiUrl}`);
     LOGGER.info(`SUNAT (SOAP) -> ${config.integracion.sunatUrl}${config.integracion.mocksHabilitados ? '  [servicios simulados activos]' : ''}`);
+    if (config.swagger.habilitado) LOGGER.info(`Swagger UI  -> http://${config.server.host}:${config.server.port}${config.server.contextPath}/swagger-ui`);
   });
 
 

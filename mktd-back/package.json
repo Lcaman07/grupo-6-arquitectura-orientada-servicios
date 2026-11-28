@@ -27,6 +27,7 @@
     "mysql2": "^3.24.5",
     "nodemailer": "^10.0.13",
     "sequelize": "^6.37.8",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

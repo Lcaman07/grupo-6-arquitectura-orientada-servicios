@@ -1,0 +1,3943 @@
+{
+  "info": {
+    "name": "MarketData Perú – API (SOA)",
+    "_postman_id": "6b1f8d2e-4c3a-4f0e-9a51-6d2b7e0c9f11",
+    "description": "Todos los servicios de MarketData Perú: seguridad, maestros, Servicio Territorial (INEI), Servicio Empresarial (SUNAT), orquestador \"Análisis de zona\", integración y los servicios externos simulados.\n\n**Antes de empezar:** abre la colección › pestaña **Variables** y completa `clave` (y `baseUrl` si tu back no está en localhost:8081). El token se obtiene y se renueva solo.\n\n**Ejecutar todo:** clic derecho en la colección › **Run collection** y desmarca la carpeta **Z · Acciones manuales**. Cada petición trae sus pruebas (pestaña Tests/Scripts).\n\n**Datos de prueba:** las carpetas 07 a 11 crean un usuario, un rol, un menú, un acceso y un país con la palabra POSTMAN y al final los dejan inactivos. La carpeta 06 limpia la caché y simula fallas, y al terminar deja INEI y SUNAT en NORMAL.\n\n**Respuestas:** casi siempre HTTP 200; el resultado está en `codigoRespuesta` (\"01\" éxito, \"99\" error controlado).\n\nDocumentación interactiva: {{baseUrl}}/swagger-ui",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "(function () {",
+          "  //-- Inicia sesión sola cuando no hay token (usa las variables usuario y clave)",
+          "  const url = pm.request.url.toString();",
+          "  const sinToken = (pm.request.auth && pm.request.auth.type === 'noauth') || url.includes('/usuarios/ingresos');",
+          "  if (sinToken || pm.collectionVariables.get('token')) return;",
+          "  const clave = pm.variables.get('clave');",
+          "  if (!clave) { console.warn('Completa la variable \"clave\" de la colección (pestaña Variables).'); return; }",
+          "  pm.sendRequest({",
+          "    url: pm.variables.get('baseUrl') + '/api/v1/usuarios/ingresos', method: 'POST',",
+          "    header: { 'Content-Type': 'application/json' },",
+          "    body: { mode: 'raw', raw: JSON.stringify({ usuario: pm.variables.get('usuario'), clave }) },",
+          "  }, (e, r) => {",
+          "    const d = !e && r ? r.json() : {};",
+          "    if (d.jwtToken) pm.collectionVariables.set('token', d.jwtToken);",
+          "    else console.warn('No se pudo iniciar sesión: ' + (d.mensajeRespuesta || e));",
+          "  });",
+          "})();"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "(function () {",
+          "  pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+          "  //-- Si el token venció, se borra para que la siguiente petición inicie sesión de nuevo",
+          "  let d = null; try { d = pm.response.json(); } catch (e) { return; }",
+          "  if (d && typeof d.mensajeRespuesta === 'string' && d.mensajeRespuesta.startsWith('Token -') && pm.request.auth?.type !== 'noauth') pm.collectionVariables.unset('token');",
+          "})();"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081/marketdata-api",
+      "type": "string",
+      "description": "URL del back (incluye el context-path)"
+    },
+    {
+      "key": "usuario",
+      "value": "admin",
+      "type": "string",
+      "description": "Usuario para iniciar sesión"
+    },
+    {
+      "key": "clave",
+      "value": "",
+      "type": "string",
+      "description": "Tu contraseña (complétala antes de ejecutar)"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Se llena solo al iniciar sesión"
+    },
+    {
+      "key": "ubigeo",
+      "value": "150122",
+      "type": "string",
+      "description": "UBIGEO de prueba (Miraflores, Lima)"
+    },
+    {
+      "key": "ruc",
+      "value": "20147117761",
+      "type": "string",
+      "description": "RUC de prueba"
+    },
+    {
+      "key": "sufijo",
+      "value": "",
+      "type": "string",
+      "description": "Se genera solo: hace únicos los datos de prueba"
+    },
+    {
+      "key": "idAnalisis",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idAnalisis2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idTipoDocumento",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idUsuarioNuevo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idRolNuevo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idMenuNuevo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ordenMenu",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idAccesoNuevo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idPaisNuevo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "miPerfil",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "miPerfilBody",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "parametroBody",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "aparienciaBody",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 · Autenticación",
+      "description": "Login y renovación del token. El token se guarda solo en la variable {{token}}.",
+      "item": [
+        {
+          "name": "Iniciar sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Devuelve el token JWT', () => pm.expect(d.jwtToken).to.be.a('string'));",
+                  "  if (d.jwtToken) pm.collectionVariables.set('token', d.jwtToken);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/ingresos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "ingresos"
+              ]
+            },
+            "description": "Iniciar sesión\n\nDevuelve el token JWT. Úsalo en el botón **Authorize** de Swagger (sin la palabra Bearer).",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{usuario}}\",\n  \"clave\": \"{{clave}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Renovar token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  if (d.jwtToken) pm.collectionVariables.set('token', d.jwtToken);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/refreshToken",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "refreshToken"
+              ]
+            },
+            "description": "Renovar el token\n\nDevuelve un token nuevo antes de que venza el actual."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 · Servicio Territorial (INEI)",
+      "description": "Servicio de entidad: indicadores de población. Consulta al INEI (REST/JSON) o usa la caché.",
+      "item": [
+        {
+          "name": "Indicadores de un distrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Trae la población', () => pm.expect(d.territorial.poblacionTotal).to.be.above(0));",
+                  "  pm.test('Informa el origen del dato', () => pm.expect(['INEI', 'CACHE', 'CACHE_VENCIDA']).to.include(d.origen));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/{{ubigeo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "{{ubigeo}}"
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        },
+        {
+          "name": "Indicadores de una provincia (1501)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Nivel PROVINCIA', () => pm.expect(d.territorial.nivel).to.eql('PROVINCIA'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/1501",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "1501"
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        },
+        {
+          "name": "Indicadores de un departamento (15)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Nivel DEPARTAMENTO', () => pm.expect(d.territorial.nivel).to.eql('DEPARTAMENTO'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "15"
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        },
+        {
+          "name": "Indicadores sin caché (forzar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Consultó al INEI en línea', () => pm.expect(d.origen).to.eql('INEI'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/{{ubigeo}}?forzar=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "{{ubigeo}}"
+              ],
+              "query": [
+                {
+                  "key": "forzar",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 · Servicio Empresarial (SUNAT)",
+      "description": "Servicio de entidad: empresas. Consulta a la SUNAT (SOAP/XML) o usa la caché.",
+      "item": [
+        {
+          "name": "Consultar un RUC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Devuelve el contribuyente pedido', () => pm.expect(d.contribuyente.ruc).to.eql(pm.variables.get('ruc')));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/empresarial/ruc/{{ruc}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "empresarial",
+                "ruc",
+                "{{ruc}}"
+              ]
+            },
+            "description": "Datos de un contribuyente por RUC\n\nValida el dígito verificador (módulo 11) y consulta a la SUNAT por SOAP (getDatosPrincipales)."
+          }
+        },
+        {
+          "name": "Consultar un RUC sin caché (forzar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Consultó a la SUNAT en línea', () => pm.expect(d.origen).to.eql('SUNAT'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/empresarial/ruc/{{ruc}}?forzar=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "empresarial",
+                "ruc",
+                "{{ruc}}"
+              ],
+              "query": [
+                {
+                  "key": "forzar",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Datos de un contribuyente por RUC\n\nValida el dígito verificador (módulo 11) y consulta a la SUNAT por SOAP (getDatosPrincipales)."
+          }
+        },
+        {
+          "name": "Resumen empresarial de una zona",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Trae empresas por sector', () => pm.expect(d.empresarial.sectores).to.be.an('array').that.is.not.empty);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/empresarial/zona/{{ubigeo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "empresarial",
+                "zona",
+                "{{ubigeo}}"
+              ]
+            },
+            "description": "Resumen empresarial de una zona\n\nEmpresas por sección CIIU, activas, habidas, de baja y una muestra (SOAP getResumenPorUbigeo)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 · Orquestador · Análisis de zona",
+      "description": "Servicio compuesto: invoca en paralelo Territorial y Empresarial, consolida, calcula el índice y guarda el análisis.",
+      "item": [
+        {
+          "name": "Analizar un distrito con rubro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  const a = d.analisis;",
+                  "  pm.test('Estado COMPLETO', () => pm.expect(a.estado).to.eql('COMPLETO'));",
+                  "  pm.test('Índice de atractivo entre 0 y 100', () => pm.expect(a.indicadores.indiceAtractivo).to.be.within(0, 100));",
+                  "  pm.test('Trazabilidad con los pasos del BPMN', () => pm.expect(a.trazabilidad.map((t) => t.paso)).to.include.members(['Gateway paralelo', 'Gateway de convergencia']));",
+                  "  pm.collectionVariables.set('idAnalisis', a.idAnalisisZona);",
+                  "  console.log(`Territorial ${a.territorial.tiempoMs} ms · Empresarial ${a.empresarial.tiempoMs} ms · Total ${a.tiempoTotalMs} ms`);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/zona",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "zona"
+              ]
+            },
+            "description": "Analizar una zona (orquestación)\n\nServicio compuesto. Valida la solicitud, invoca **en paralelo** al Servicio Territorial (INEI) y al Empresarial (SUNAT), consolida, calcula el índice de atractivo (0-100) y guarda el análisis. Estado: COMPLETO (ambas fuentes), PARCIAL (una) o FALLIDO (ninguna). La lista `trazabilidad` muestra cada paso del BPMN con su tiempo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ubigeo\": \"{{ubigeo}}\",\n  \"seccionInteres\": \"I\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Analizar sin caché (forzar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  const a = d.analisis;",
+                  "  pm.test('Consultó INEI y SUNAT en línea', () => { pm.expect(a.territorial.origen).to.eql('INEI'); pm.expect(a.empresarial.origen).to.eql('SUNAT'); });",
+                  "  pm.collectionVariables.set('idAnalisis2', a.idAnalisisZona);",
+                  "  console.log(`Paralelo: INEI ${a.territorial.tiempoMs} ms + SUNAT ${a.empresarial.tiempoMs} ms -> total ${a.tiempoTotalMs} ms`);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/zona",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "zona"
+              ]
+            },
+            "description": "Analizar una zona (orquestación)\n\nServicio compuesto. Valida la solicitud, invoca **en paralelo** al Servicio Territorial (INEI) y al Empresarial (SUNAT), consolida, calcula el índice de atractivo (0-100) y guarda el análisis. Estado: COMPLETO (ambas fuentes), PARCIAL (una) o FALLIDO (ninguna). La lista `trazabilidad` muestra cada paso del BPMN con su tiempo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ubigeo\": \"040101\",\n  \"seccionInteres\": \"I\",\n  \"forzar\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Analizar una provincia sin rubro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Nivel PROVINCIA', () => pm.expect(d.analisis.zona.nivel).to.eql('PROVINCIA'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/zona",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "zona"
+              ]
+            },
+            "description": "Analizar una zona (orquestación)\n\nServicio compuesto. Valida la solicitud, invoca **en paralelo** al Servicio Territorial (INEI) y al Empresarial (SUNAT), consolida, calcula el índice de atractivo (0-100) y guarda el análisis. Estado: COMPLETO (ambas fuentes), PARCIAL (una) o FALLIDO (ninguna). La lista `trazabilidad` muestra cada paso del BPMN con su tiempo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ubigeo\": \"1501\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 · Análisis guardados",
+      "description": "Historial, detalle, comparación y panel. No vuelven a llamar a INEI ni SUNAT.",
+      "item": [
+        {
+          "name": "Historial de análisis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Lista de análisis', () => pm.expect(d.listados).to.be.an('array'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/listados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "listados"
+              ]
+            },
+            "description": "Historial de análisis\n\nNo vuelve a llamar a INEI ni SUNAT."
+          }
+        },
+        {
+          "name": "Historial filtrado (nivel ALTO)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Solo nivel ALTO', () => d.listados.forEach((x) => pm.expect(x.nivelAtractivo).to.eql('ALTO')));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/listados?nivelAtractivo=ALTO&texto=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "listados"
+              ],
+              "query": [
+                {
+                  "key": "nivelAtractivo",
+                  "value": "ALTO"
+                },
+                {
+                  "key": "texto",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Historial de análisis\n\nNo vuelve a llamar a INEI ni SUNAT."
+          }
+        },
+        {
+          "name": "Ver un análisis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Es el análisis pedido', () => pm.expect(String(d.analisis.idAnalisisZona)).to.eql(String(pm.variables.get('idAnalisis'))));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/mostrar/{{idAnalisis}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "mostrar",
+                "{{idAnalisis}}"
+              ]
+            },
+            "description": "Ver un análisis guardado"
+          }
+        },
+        {
+          "name": "Comparar dos análisis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Compara 2 análisis', () => pm.expect(d.listados).to.have.lengthOf(2));",
+                  "  pm.test('Indica el recomendado', () => pm.expect(d.recomendado).to.exist);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/comparar?ids={{idAnalisis}},{{idAnalisis2}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "comparar"
+              ],
+              "query": [
+                {
+                  "key": "ids",
+                  "value": "{{idAnalisis}},{{idAnalisis2}}"
+                }
+              ]
+            },
+            "description": "Comparar de 2 a 4 análisis"
+          }
+        },
+        {
+          "name": "Panel principal (dashboard)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Trae los KPIs', () => pm.expect(d.kpi.analisis).to.be.above(0));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "dashboard"
+              ]
+            },
+            "description": "Datos del panel principal\n\nKPIs, ranking, análisis por día, por nivel, integración y últimos análisis."
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 · Integración SOA (bitácora y pruebas de falla)",
+      "description": "Estado de las fuentes, bitácora y simulación de fallas. Al final deja INEI y SUNAT en NORMAL.",
+      "item": [
+        {
+          "name": "Estado de INEI y SUNAT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Informa las dos fuentes', () => pm.expect(d.servicios.map((s) => s.servicio)).to.have.members(['INEI', 'SUNAT']));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "estado"
+              ]
+            },
+            "description": "Disponibilidad de las fuentes y parámetros de mediación"
+          }
+        },
+        {
+          "name": "Bitácora de llamadas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Lista de llamadas', () => pm.expect(d.listados).to.be.an('array'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/bitacora",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "bitacora"
+              ]
+            },
+            "description": "Bitácora de llamadas a INEI y SUNAT"
+          }
+        },
+        {
+          "name": "Bitácora solo INEI",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Solo INEI', () => d.listados.forEach((x) => pm.expect(x.servicio).to.eql('INEI')));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/bitacora?servicio=INEI",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "bitacora"
+              ],
+              "query": [
+                {
+                  "key": "servicio",
+                  "value": "INEI"
+                }
+              ]
+            },
+            "description": "Bitácora de llamadas a INEI y SUNAT"
+          }
+        },
+        {
+          "name": "Simular INEI intermitente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/simulacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "simulacion"
+              ]
+            },
+            "description": "Simular fallas de INEI o SUNAT\n\nSolo con los servicios simulados. Requiere el permiso INTEGRACION_SIMULAR. **Vuelve a NORMAL al terminar.**",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio\": \"INEI\",\n  \"modo\": \"INTERMITENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consulta con INEI intermitente (se recupera con reintento)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Respondió el INEI pese a la falla', () => pm.expect(d.origen).to.eql('INEI'));",
+                  "  console.log(`Intentos: ${d.intentos}`);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/150131?forzar=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "150131"
+              ],
+              "query": [
+                {
+                  "key": "forzar",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        },
+        {
+          "name": "Volver INEI a NORMAL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/simulacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "simulacion"
+              ]
+            },
+            "description": "Simular fallas de INEI o SUNAT\n\nSolo con los servicios simulados. Requiere el permiso INTEGRACION_SIMULAR. **Vuelve a NORMAL al terminar.**",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio\": \"INEI\",\n  \"modo\": \"NORMAL\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Limpiar caché",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/limpiarCache",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "limpiarCache"
+              ]
+            },
+            "description": "Limpiar la caché de INEI y SUNAT\n\nLa próxima consulta irá a la fuente. El historial de análisis se conserva. Requiere el permiso CACHE_LIMPIAR."
+          }
+        },
+        {
+          "name": "Simular SUNAT caída",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/simulacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "simulacion"
+              ]
+            },
+            "description": "Simular fallas de INEI o SUNAT\n\nSolo con los servicios simulados. Requiere el permiso INTEGRACION_SIMULAR. **Vuelve a NORMAL al terminar.**",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio\": \"SUNAT\",\n  \"modo\": \"CAIDO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Analizar con SUNAT caída (resultado PARCIAL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Estado PARCIAL', () => pm.expect(d.analisis.estado).to.eql('PARCIAL'));",
+                  "  pm.test('La rama territorial sí respondió', () => pm.expect(d.analisis.territorial.datos).to.exist);",
+                  "  pm.test('La rama empresarial quedó con error', () => pm.expect(d.analisis.empresarial.origen).to.eql('ERROR'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/zona",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "zona"
+              ]
+            },
+            "description": "Analizar una zona (orquestación)\n\nServicio compuesto. Valida la solicitud, invoca **en paralelo** al Servicio Territorial (INEI) y al Empresarial (SUNAT), consolida, calcula el índice de atractivo (0-100) y guarda el análisis. Estado: COMPLETO (ambas fuentes), PARCIAL (una) o FALLIDO (ninguna). La lista `trazabilidad` muestra cada paso del BPMN con su tiempo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ubigeo\": \"080101\",\n  \"seccionInteres\": \"G\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Volver SUNAT a NORMAL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Ambas fuentes en NORMAL', () => pm.expect(d.simulacion).to.eql({ INEI: 'NORMAL', SUNAT: 'NORMAL' }));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/simulacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "simulacion"
+              ]
+            },
+            "description": "Simular fallas de INEI o SUNAT\n\nSolo con los servicios simulados. Requiere el permiso INTEGRACION_SIMULAR. **Vuelve a NORMAL al terminar.**",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio\": \"SUNAT\",\n  \"modo\": \"NORMAL\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 · Seguridad · Usuarios",
+      "description": "Crea un usuario de prueba (queda desactivado al final).",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Lista de usuarios', () => pm.expect(d.listados).to.be.an('array').that.is.not.empty);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/listados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "listados"
+              ]
+            },
+            "description": "Listar usuarios"
+          }
+        },
+        {
+          "name": "Ver un usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/mostrar/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "mostrar",
+                "1"
+              ]
+            },
+            "description": "Ver un usuario"
+          }
+        },
+        {
+          "name": "Ver mi perfil",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.collectionVariables.set('miPerfil', JSON.stringify({ nombres: d.nombres, apellidos: d.apellidos, telefono: d.telefono, idTipoDocumento: d.idTipoDocumento, dni: d.dni }));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/miPerfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "miPerfil"
+              ]
+            },
+            "description": "Ver mi perfil\n\nDatos del usuario del token."
+          }
+        },
+        {
+          "name": "Guardar mi perfil (sin cambios)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const p = pm.collectionVariables.get('miPerfil');",
+                  "  pm.collectionVariables.set('miPerfilBody', p || '{}');",
+                  "  if (!p) console.warn('Ejecuta antes \"Ver mi perfil\"');",
+                  "})();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/miPerfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "miPerfil"
+              ]
+            },
+            "description": "Reenvía tus mismos datos (no cambia nada). Para cambiar la contraseña agrega claveActual y claveNueva.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{miPerfilBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Tipos de documento (multitabla 004)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  const dni = d.listados.find((x) => x.valor === 'DNI') || d.listados[0];",
+                  "  pm.collectionVariables.set('idTipoDocumento', dni.idMultitabla);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/listados/004",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "listados",
+                "004"
+              ]
+            },
+            "description": "Valores activos de una tabla\n\n001 departamentos · 002 provincias (codigoPadre = departamento) · 003 distritos (codigoPadre = provincia) · 004 tipos de documento · 033 sectores CIIU..."
+          }
+        },
+        {
+          "name": "Crear usuario de prueba",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.collectionVariables.set('sufijo', String(Date.now()).slice(-5));",
+                  "})();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  if (d.id) pm.collectionVariables.set('idUsuarioNuevo', d.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "registros"
+              ]
+            },
+            "description": "Crear o editar un usuario\n\nidUsuario null = crear (la contraseña es obligatoria) · idUsuario con valor = editar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idUsuario\": null,\n  \"idRol\": 2,\n  \"nombres\": \"USUARIO\",\n  \"apellidos\": \"POSTMAN {{sufijo}}\",\n  \"usuario\": \"postman{{sufijo}}\",\n  \"contrasenia\": \"Postman2026\",\n  \"telefono\": \"9{{sufijo}}000\",\n  \"correo\": \"postman{{sufijo}}@marketdata.pe\",\n  \"flkactivo\": true,\n  \"idTipoDocumento\": {{idTipoDocumento}},\n  \"dni\": \"7{{sufijo}}00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ver el usuario creado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('Es el usuario creado', () => pm.expect(d.usuario).to.eql('postman' + pm.variables.get('sufijo')));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/mostrar/{{idUsuarioNuevo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "mostrar",
+                "{{idUsuarioNuevo}}"
+              ]
+            },
+            "description": "Ver un usuario"
+          }
+        },
+        {
+          "name": "Desactivar el usuario creado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/modificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "modificar"
+              ]
+            },
+            "description": "Activar o desactivar un usuario",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idUsuario\": {{idUsuarioNuevo}},\n  \"flkactivo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Foto de un usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/foto/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "foto",
+                "1"
+              ]
+            },
+            "description": "Descargar la foto de un usuario"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 · Seguridad · Roles",
+      "description": "Crea un rol de prueba (queda inactivo al final).",
+      "item": [
+        {
+          "name": "Listar roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/listados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "listados"
+              ]
+            },
+            "description": "Listar roles"
+          }
+        },
+        {
+          "name": "Roles activos (combos)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/inicializacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "inicializacion"
+              ]
+            },
+            "description": "Roles activos (para combos)"
+          }
+        },
+        {
+          "name": "Crear rol de prueba",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  if (!pm.collectionVariables.get('sufijo')) pm.collectionVariables.set('sufijo', String(Date.now()).slice(-5));",
+                  "})();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  if (d.id) pm.collectionVariables.set('idRolNuevo', d.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "registros"
+              ]
+            },
+            "description": "Crear un rol",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"ROL POSTMAN {{sufijo}}\",\n  \"flkactivo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ver el rol creado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/mostrar/{{idRolNuevo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "mostrar",
+                "{{idRolNuevo}}"
+              ]
+            },
+            "description": "Ver un rol"
+          }
+        },
+        {
+          "name": "Editar el rol",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/modificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "modificar"
+              ]
+            },
+            "description": "Editar un rol",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idrol\": {{idRolNuevo}},\n  \"nombre\": \"ROL POSTMAN {{sufijo}} EDITADO\",\n  \"flkactivo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Cambiar estado del rol (activo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/cambiarEstado/{{idRolNuevo}}/true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "cambiarEstado",
+                "{{idRolNuevo}}",
+                "true"
+              ]
+            },
+            "description": "Cambiar el estado de un rol"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 · Seguridad · Menús",
+      "description": "Crea un menú de prueba (queda inactivo al final).",
+      "item": [
+        {
+          "name": "Listar menús",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/menu/listados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "menu",
+                "listados"
+              ]
+            },
+            "description": "Listar menús"
+          }
+        },
+        {
+          "name": "Menús activos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/menu/menuactivos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "menu",
+                "menuactivos"
+              ]
+            },
+            "description": "Menús activos"
+          }
+        },
+        {
+          "name": "Crear menú de prueba",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  if (!pm.collectionVariables.get('sufijo')) pm.collectionVariables.set('sufijo', String(Date.now()).slice(-5));",
+                  "  pm.sendRequest({ url: pm.variables.get('baseUrl') + '/api/v1/menu/listados', header: { Authorization: 'Bearer ' + pm.collectionVariables.get('token') } }, (e, r) => {",
+                  "    const lista = (!e && r.json().listados) || [];",
+                  "    pm.collectionVariables.set('ordenMenu', Math.max(0, ...lista.map((m) => Number(m.orden) || 0)) + 1);",
+                  "  });",
+                  "})();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  if (d.id) pm.collectionVariables.set('idMenuNuevo', d.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/menu/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "menu",
+                "registros"
+              ]
+            },
+            "description": "El orden del menú debe ser único: antes de enviar se calcula el siguiente orden libre.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idMenu\": null,\n  \"nombre\": \"Menu Postman {{sufijo}}\",\n  \"descripcion\": \"Menú creado desde Postman\",\n  \"orden\": {{ordenMenu}},\n  \"flkactivo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ver el menú creado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/menu/mostrar/{{idMenuNuevo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "menu",
+                "mostrar",
+                "{{idMenuNuevo}}"
+              ]
+            },
+            "description": "Ver un menú"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 · Seguridad · Accesos y accesos por rol",
+      "description": "Crea un acceso en el menú de prueba, lo asigna al rol de prueba y al final desactiva acceso, menú y rol.",
+      "item": [
+        {
+          "name": "Accesos agrupados por menú",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acceso/accesos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "acceso",
+                "accesos"
+              ]
+            },
+            "description": "Accesos activos agrupados por menú"
+          }
+        },
+        {
+          "name": "Listar accesos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acceso/listados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "acceso",
+                "listados"
+              ]
+            },
+            "description": "Listar accesos"
+          }
+        },
+        {
+          "name": "Crear acceso de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  if (d.id) pm.collectionVariables.set('idAccesoNuevo', d.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acceso/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "acceso",
+                "registros"
+              ]
+            },
+            "description": "Crear o editar un acceso",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idAcceso\": null,\n  \"idMenu\": {{idMenuNuevo}},\n  \"nombre\": \"Acceso Postman {{sufijo}}\",\n  \"path\": \"/pages/postman.html\",\n  \"tipo\": \"P\",\n  \"orden\": 99,\n  \"flkactivo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ver el acceso creado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acceso/mostrar/{{idAccesoNuevo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "acceso",
+                "mostrar",
+                "{{idAccesoNuevo}}"
+              ]
+            },
+            "description": "Ver un acceso"
+          }
+        },
+        {
+          "name": "Accesos del rol ANALISTA (2)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accesoRol/listaAccesoRol/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accesoRol",
+                "listaAccesoRol",
+                "2"
+              ]
+            },
+            "description": "Accesos de un rol"
+          }
+        },
+        {
+          "name": "Asignar el acceso al rol de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accesoRol/registros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accesoRol",
+                "registros"
+              ]
+            },
+            "description": "Asignar accesos a un rol",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lista\": [\n    { \"idrol\": {{idRolNuevo}}, \"idacceso\": {{idAccesoNuevo}} }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Reemplazar los accesos del rol de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accesoRol/modificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accesoRol",
+                "modificar"
+              ]
+            },
+            "description": "Reemplazar los accesos de un rol\n\nLa lista enviada queda como los accesos del rol.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lista\": [\n    { \"idrol\": {{idRolNuevo}}, \"idacceso\": {{idAccesoNuevo}} },\n    { \"idrol\": {{idRolNuevo}}, \"idacceso\": 1 }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ver accesos del rol de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accesoRol/listaAccesoRol/{{idRolNuevo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accesoRol",
+                "listaAccesoRol",
+                "{{idRolNuevo}}"
+              ]
+            },
+            "description": "Accesos de un rol"
+          }
+        },
+        {
+          "name": "Desactivar el acceso de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acceso/modificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "acceso",
+                "modificar"
+              ]
+            },
+            "description": "Activar o desactivar un acceso",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idAcceso\": {{idAccesoNuevo}},\n  \"flkactivo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Desactivar el menú de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/menu/modificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "menu",
+                "modificar"
+              ]
+            },
+            "description": "Activar o desactivar un menú",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idMenu\": {{idMenuNuevo}},\n  \"flkactivo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Desactivar el rol de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/roles/modificarRol",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "roles",
+                "modificarRol"
+              ]
+            },
+            "description": "Activar o desactivar un rol",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idRol\": {{idRolNuevo}},\n  \"flkactivo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 · Maestros · Multitabla",
+      "description": "Catálogos y parámetros. Agrega un país de prueba y lo desactiva.",
+      "item": [
+        {
+          "name": "Tablas y qué se puede editar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/tablas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "tablas"
+              ]
+            },
+            "description": "Lista de tablas y qué se puede editar en cada una"
+          }
+        },
+        {
+          "name": "Departamentos (001)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.test('25 departamentos', () => pm.expect(d.listados.length).to.be.at.least(25));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/listados/001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "listados",
+                "001"
+              ]
+            },
+            "description": "Valores activos de una tabla\n\n001 departamentos · 002 provincias (codigoPadre = departamento) · 003 distritos (codigoPadre = provincia) · 004 tipos de documento · 033 sectores CIIU..."
+          }
+        },
+        {
+          "name": "Provincias de Lima (002)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/listados/002?codigoPadre=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "listados",
+                "002"
+              ],
+              "query": [
+                {
+                  "key": "codigoPadre",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Valores activos de una tabla\n\n001 departamentos · 002 provincias (codigoPadre = departamento) · 003 distritos (codigoPadre = provincia) · 004 tipos de documento · 033 sectores CIIU..."
+          }
+        },
+        {
+          "name": "Distritos de Lima (003)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/listados/003?codigoPadre=1501",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "listados",
+                "003"
+              ],
+              "query": [
+                {
+                  "key": "codigoPadre",
+                  "value": "1501"
+                }
+              ]
+            },
+            "description": "Valores activos de una tabla\n\n001 departamentos · 002 provincias (codigoPadre = departamento) · 003 distritos (codigoPadre = provincia) · 004 tipos de documento · 033 sectores CIIU..."
+          }
+        },
+        {
+          "name": "Parámetros generales (031)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  const p = d.listados.find((x) => x.codigo === 'MUESTRA_EMPRESAS');",
+                  "  if (p) pm.collectionVariables.set('parametroBody', JSON.stringify({ idMultitabla: p.idMultitabla, codigoTabla: '031', codigo: p.codigo, valor: p.valor }, null, 2));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/admin/031",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "admin",
+                "031"
+              ]
+            },
+            "description": "Valores de una tabla para administrar (incluye inactivos)"
+          }
+        },
+        {
+          "name": "Catálogos 033 y 036",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/catalogos?tablas=033,036",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "catalogos"
+              ],
+              "query": [
+                {
+                  "key": "tablas",
+                  "value": "033,036"
+                }
+              ]
+            },
+            "description": "Varios catálogos en una llamada"
+          }
+        },
+        {
+          "name": "Guardar un parámetro (mismo valor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/guardar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "guardar"
+              ]
+            },
+            "description": "Reenvía el valor actual de MUESTRA_EMPRESAS (no cambia nada). Cambia \"valor\" para modificarlo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{parametroBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Agregar país de prueba (006)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  if (d.id) pm.collectionVariables.set('idPaisNuevo', d.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/guardar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "guardar"
+              ]
+            },
+            "description": "Agregar o modificar un valor\n\nCada tabla define qué se puede cambiar (ver /multitabla/tablas). Requiere el permiso MULTITABLA_EDITAR.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idMultitabla\": null,\n  \"codigoTabla\": \"006\",\n  \"valor\": \"PAIS POSTMAN {{sufijo}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Desactivar el país de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/multitabla/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "multitabla",
+                "estado"
+              ]
+            },
+            "description": "Activar o desactivar un valor\n\nSolo en tablas que lo permiten (por ejemplo 006 País).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idMultitabla\": {{idPaisNuevo}},\n  \"flkactivo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 · Maestros · Apariencia",
+      "description": "Colores del sistema.",
+      "item": [
+        {
+          "name": "Apariencia pública (sin token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "  pm.collectionVariables.set('aparienciaBody', JSON.stringify({ valores: { COLOR_PRINCIPAL: d.valores.COLOR_PRINCIPAL } }, null, 2));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/apariencia/publica",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "apariencia",
+                "publica"
+              ]
+            },
+            "description": "Colores y fondo del login\n\nPública: el login la usa antes de iniciar sesión.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Guardar colores (mismo color)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/apariencia/guardar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "apariencia",
+                "guardar"
+              ]
+            },
+            "description": "Reenvía el color principal actual (no cambia nada). Cambia el #RRGGBB para probar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{{aparienciaBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 · Servicios externos simulados (INEI y SUNAT)",
+      "description": "Las fuentes tal como responden ANTES de que los adaptadores las transformen. No usan token.",
+      "item": [
+        {
+          "name": "INEI · salud",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('UP', () => pm.expect(pm.response.json().status).to.eql('UP'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/mock/inei/api/v1/salud",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mock",
+                "inei",
+                "api",
+                "v1",
+                "salud"
+              ]
+            },
+            "description": "INEI · verificación del servicio",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "INEI · indicadores (JSON original)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('Lista de indicadores codificados', () => pm.expect(pm.response.json().indicadores).to.be.an('array'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/mock/inei/api/v1/ubigeo/{{ubigeo}}/indicadores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mock",
+                "inei",
+                "api",
+                "v1",
+                "ubigeo",
+                "{{ubigeo}}",
+                "indicadores"
+              ]
+            },
+            "description": "INEI · indicadores en su formato original (REST/JSON)\n\nRespuesta antes de que el adaptador la transforme.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "SUNAT · WSDL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('Es un WSDL', () => pm.expect(pm.response.text()).to.include('definitions'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/mock/sunat/ws/ConsultaRuc?wsdl=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mock",
+                "sunat",
+                "ws",
+                "ConsultaRuc"
+              ],
+              "query": [
+                {
+                  "key": "wsdl",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "SUNAT · contrato WSDL\n\nAgrega ?wsdl en el navegador.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "SUNAT · getDatosPrincipales (SOAP)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('Respuesta XML con el RUC', () => pm.expect(pm.response.text()).to.include('<ddp_numruc>' + pm.variables.get('ruc')));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "SOAPAction",
+                "value": "getDatosPrincipales"
+              },
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mock/sunat/ws/ConsultaRuc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mock",
+                "sunat",
+                "ws",
+                "ConsultaRuc"
+              ]
+            },
+            "description": "SUNAT · operación SOAP (XML)\n\nHeader SOAPAction: getDatosPrincipales o getResumenPorUbigeo.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://ws.consultaruc.sunat.mock.marketdata.pe/\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ser:getDatosPrincipales>\n      <numruc>{{ruc}}</numruc>\n    </ser:getDatosPrincipales>\n  </soapenv:Body>\n</soapenv:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "SUNAT · getResumenPorUbigeo (SOAP)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('Respuesta SOAP', () => pm.expect(pm.response.text()).to.include('getResumenPorUbigeoResponse'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "SOAPAction",
+                "value": "getResumenPorUbigeo"
+              },
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mock/sunat/ws/ConsultaRuc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mock",
+                "sunat",
+                "ws",
+                "ConsultaRuc"
+              ]
+            },
+            "description": "SUNAT · operación SOAP (XML)\n\nHeader SOAPAction: getDatosPrincipales o getResumenPorUbigeo.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://ws.consultaruc.sunat.mock.marketdata.pe/\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ser:getResumenPorUbigeo>\n      <ubigeo>{{ubigeo}}</ubigeo>\n      <tamanioMuestra>5</tamanioMuestra>\n    </ser:getResumenPorUbigeo>\n  </soapenv:Body>\n</soapenv:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 · Casos de error (validaciones)",
+      "description": "Errores controlados: la API responde codigoRespuesta 99 con un mensaje claro.",
+      "item": [
+        {
+          "name": "UBIGEO con formato inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "  pm.test('Mensaje: UBIGEO', () => pm.expect(d.mensajeRespuesta).to.include('UBIGEO'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/15A1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "15A1"
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        },
+        {
+          "name": "UBIGEO inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "  pm.test('Mensaje: no existe', () => pm.expect(d.mensajeRespuesta).to.include('no existe'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/territorial/indicadores/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "territorial",
+                "indicadores",
+                "999999"
+              ]
+            },
+            "description": "Indicadores territoriales de una zona\n\nServicio de entidad. Usa la caché vigente o consulta al INEI (REST/JSON) con timeout y reintentos. Si el INEI falla y hay dato guardado, responde origen CACHE_VENCIDA."
+          }
+        },
+        {
+          "name": "RUC con dígito verificador incorrecto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "  pm.test('Mensaje: dígito verificador', () => pm.expect(d.mensajeRespuesta).to.include('dígito verificador'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/empresarial/ruc/20123456789",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "empresarial",
+                "ruc",
+                "20123456789"
+              ]
+            },
+            "description": "Datos de un contribuyente por RUC\n\nValida el dígito verificador (módulo 11) y consulta a la SUNAT por SOAP (getDatosPrincipales)."
+          }
+        },
+        {
+          "name": "Petición sin token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "  pm.test('Mensaje: Token', () => pm.expect(d.mensajeRespuesta).to.include('Token'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "dashboard"
+              ]
+            },
+            "description": "Datos del panel principal\n\nKPIs, ranking, análisis por día, por nivel, integración y últimos análisis.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Orquestador con request inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/zona",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "zona"
+              ]
+            },
+            "description": "Analizar una zona (orquestación)\n\nServicio compuesto. Valida la solicitud, invoca **en paralelo** al Servicio Territorial (INEI) y al Empresarial (SUNAT), consolida, calcula el índice de atractivo (0-100) y guarda el análisis. Estado: COMPLETO (ambas fuentes), PARCIAL (una) o FALLIDO (ninguna). La lista `trazabilidad` muestra cada paso del BPMN con su tiempo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ubigeo\": \"1501311\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Comparar con un solo análisis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "  pm.test('Mensaje: 2 a 4', () => pm.expect(d.mensajeRespuesta).to.include('2 a 4'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analisis/comparar?ids={{idAnalisis}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analisis",
+                "comparar"
+              ],
+              "query": [
+                {
+                  "key": "ids",
+                  "value": "{{idAnalisis}}"
+                }
+              ]
+            },
+            "description": "Comparar de 2 a 4 análisis"
+          }
+        },
+        {
+          "name": "Simulación con modo inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 99 (error controlado)', () => pm.expect(d.codigoRespuesta).to.eql('99'));",
+                  "  pm.test('Mensaje: Modo inválido', () => pm.expect(d.mensajeRespuesta).to.include('Modo inválido'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracion/simulacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracion",
+                "simulacion"
+              ]
+            },
+            "description": "Simular fallas de INEI o SUNAT\n\nSolo con los servicios simulados. Requiere el permiso INTEGRACION_SIMULAR. **Vuelve a NORMAL al terminar.**",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio\": \"INEI\",\n  \"modo\": \"ROTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 · Salud",
+      "description": "",
+      "item": [
+        {
+          "name": "Back arriba (health)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('UP', () => pm.expect(pm.response.json().status).to.eql('UP'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Verificar que el back está arriba",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Z · Acciones manuales (no ejecutar en el Runner)",
+      "description": "Suben archivos, cambian el fondo del login o envían correos. Ejecútalas una por una: elige el archivo en Body › form-data cuando corresponda.",
+      "item": [
+        {
+          "name": "Subir la foto de un usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/saveFoto",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "saveFoto"
+              ]
+            },
+            "description": "Subir la foto de un usuario",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "idUsuario",
+                  "value": "{{idUsuarioNuevo}}",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Subir mi foto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/usuarios/miFoto",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "usuarios",
+                "miFoto"
+              ]
+            },
+            "description": "Subir mi foto",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar el fondo del login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/apariencia/fondoLogin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "apariencia",
+                "fondoLogin"
+              ]
+            },
+            "description": "Cambiar la imagen de fondo del login",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Quitar el fondo del login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  const d = pm.response.json();",
+                  "  pm.test('codigoRespuesta = 01 (éxito)', () => pm.expect(d.codigoRespuesta, d.mensajeRespuesta).to.eql('01'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/apariencia/quitarFondo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "apariencia",
+                "quitarFondo"
+              ]
+            },
+            "description": "Volver a la imagen original del login"
+          }
+        },
+        {
+          "name": "Enviar correo de recuperación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "  pm.test('1 = enviado', () => pm.expect(pm.response.json()).to.eql(1));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login/enviarCorreo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "login",
+                "enviarCorreo"
+              ]
+            },
+            "description": "Enviar el correo para restablecer la contraseña\n\nResponde 1 = correo enviado · 0 = no se pudo.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"analista@marketdata.pe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verificar token del correo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login/restablecer/verificar/TOKEN_DEL_CORREO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "login",
+                "restablecer",
+                "verificar",
+                "TOKEN_DEL_CORREO"
+              ]
+            },
+            "description": "Verificar el token del correo\n\nResponde 1 = válido · 0 = vencido o inexistente.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Restablecer contraseña",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login/restablecer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "login",
+                "restablecer"
+              ]
+            },
+            "description": "Guardar la nueva contraseña\n\nResponde 1 = guardada · 0 = no se pudo.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"TOKEN_DEL_CORREO\",\n  \"clave\": \"NuevaClave2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

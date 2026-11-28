@@ -26,13 +26,25 @@ Para usar otra fuente basta con cambiar `INEI_URL` / `SUNAT_URL` en el `.env` (e
 2. `npm install`
 3. Revisa el `.env` (BD, `JWT_SECRET`, puerto).
 4. `npm run dev` → `http://localhost:8081/marketdata-api` (salud: `/actuator/health`).
-5. Front: abre `gwu-front/pages/seguridad/login.html` con Live Server. `gwu-front/dist/js/config.json` apunta a `http://localhost:8081/marketdata-api`.
+5. Front: abre `mktd-front/pages/seguridad/login.html` con Live Server. `mktd-front/dist/js/config.json` apunta a `http://localhost:8081/marketdata-api`.
 
 Usuarios: `admin` (se conserva tu usuario y contraseña) y `analista` / `Analista2026` (rol ANALISTA DE MERCADO).
 
 Pruebas unitarias (sin BD): `npm test`.
 
 Docker: `cp env.docker.example .env.docker`, completa las claves y `docker compose up -d --build` (la BD se crea sola con `db/docker/01_marketdata_db.sql`).
+
+## Documentación de la API (Swagger) y colección de Postman
+
+- **Swagger UI:** con el back levantado abre `http://localhost:8081/marketdata-api/swagger-ui`. Están documentadas todas las rutas (seguridad, maestros, INEI, SUNAT, orquestador, integración y los servicios simulados).
+  1. Ejecuta *Autenticación › Iniciar sesión* (Try it out) con tu usuario.
+  2. Copia `jwtToken`, presiona **Authorize** y pégalo (sin la palabra Bearer).
+  3. Ya puedes probar cualquier servicio desde el navegador.
+- **JSON OpenAPI 3:** `http://localhost:8081/marketdata-api/api-docs.json` (se puede importar en Postman o Insomnia).
+- La especificación está en `src/docs/openapi.js`: si agregas una ruta en `src/routes/index.js`, agrégala también ahí. `SWAGGER_HABILITADO=false` en el `.env` la apaga (por ejemplo, en producción).
+- **Postman:** importa `docs/postman/MarketData_Peru.postman_collection.json` (Import › File). En la colección › **Variables** completa `clave` (y `baseUrl` si cambia el puerto). El token se obtiene y renueva solo.
+  - *Run collection* ejecuta todo con sus pruebas; desmarca la carpeta **Z · Acciones manuales** (suben archivos o envían correos).
+  - Las carpetas 07 a 11 crean un usuario, rol, menú, acceso y país de prueba (con la palabra POSTMAN) y al final los dejan inactivos. La carpeta 06 limpia la caché, simula fallas y deja INEI y SUNAT en NORMAL.
 
 ## Endpoints de MarketData (todos con token, bajo `/marketdata-api`)
 

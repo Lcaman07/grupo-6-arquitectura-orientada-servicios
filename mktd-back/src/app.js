@@ -58,6 +58,18 @@ function crearApp() {
     app.use(`${config.server.contextPath}/mock/sunat/ws/ConsultaRuc`, require('./integracion/mocks/sunatMock').router);
   }
 
+  //-- Documentación Swagger (OpenAPI 3). Antes del filtro JWT: la página se abre sin token
+  //--   UI  : {contexto}/swagger-ui      JSON: {contexto}/api-docs.json
+  if (config.swagger.habilitado) {
+    const swaggerUi = require('swagger-ui-express');
+    const openapi = require('./docs/openapi');
+    app.get(`${config.server.contextPath}/api-docs.json`, (req, res) => res.json(openapi));
+    app.use(`${config.server.contextPath}/swagger-ui`, swaggerUi.serve, swaggerUi.setup(openapi, {
+      customSiteTitle: 'MarketData Perú - API',
+      swaggerOptions: { persistAuthorization: true, docExpansion: 'none', displayRequestDuration: true, filter: true },
+    }));
+  }
+
   //-- API: primero el filtro JWT, luego el contexto (usuario para auditoría) y las rutas
   app.use(config.server.contextPath, jwtFilter, contexto.middleware, routes);
 
